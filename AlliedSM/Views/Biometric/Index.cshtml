@@ -1,0 +1,56 @@
+@model IEnumerable<AlliedSM.Models.StaffAttendance>
+@{
+    ViewData["Title"] = "Biometric Attendance";
+}
+
+<h2>Staff Biometric Attendance</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto"><input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate" /></div>
+    <div class="col-auto"><input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Filter</button></div>
+    <div class="col-auto ms-auto">
+        <a asp-action="Import" class="btn btn-primary">Import Machine Log (.csv)</a>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Date</th><th>Staff</th><th>Check In</th><th>Check Out</th><th>Late (min)</th><th>Late Fine</th><th>Overtime (hrs)</th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.Date.ToString("dd-MMM-yyyy")</td>
+            <td>@s.Staff?.FullName</td>
+            <td>@(s.CheckIn?.ToString(@"hh\:mm") ?? "-")</td>
+            <td>@(s.CheckOut?.ToString(@"hh\:mm") ?? "-")</td>
+            <td>@(s.LateMinutes > 0 ? s.LateMinutes.ToString() : "-")</td>
+            <td>@(s.LateFine > 0 ? $"Rs {s.LateFine}" : "-")</td>
+            <td>@(s.OvertimeHours > 0 ? s.OvertimeHours.ToString() : "-")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="card border-0 shadow-sm mt-3"><div class="card-body">
+    <h5>Push Late Fines into Payroll</h5>
+    <form asp-action="ApplyFinesToPayroll" method="post" class="row g-2 align-items-end">
+        <div class="col-auto">
+            <label class="form-label">Staff ID</label>
+            <input type="number" name="staffId" class="form-control" style="width:100px;" required />
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Month</label>
+            <input type="number" name="month" class="form-control" style="width:80px;" value="@DateTime.Today.Month" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Year</label>
+            <input type="number" name="year" class="form-control" style="width:90px;" value="@DateTime.Today.Year" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-dark">Apply to Salary Slip</button>
+        </div>
+    </form>
+</div></div>

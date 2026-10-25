@@ -1,0 +1,36 @@
+@model AlliedSM.Models.SalarySlip
+@{
+    Layout = null;
+    var monthNames = new[] { "", "January","February","March","April","May","June","July","August","September","October","November","December" };
+}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Salary Slip — @Model.Staff?.FullName</title>
+<style>
+    body { font-family:'Segoe UI', sans-serif; color:#231a16; background:#eee; padding:20px; }
+    .slip { max-width:420px; margin:auto; background:#fff; border:2px solid #c8a24b; border-radius:8px; padding:20px; }
+    .slip h3 { color:#5a1723; margin:0 0 4px 0; }
+    .row-line { display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px dotted #ccc; }
+    .total { display:flex; justify-content:space-between; font-weight:700; font-size:16px; padding-top:10px; color:#5a1723; }
+    .toolbar { text-align:center; margin-bottom:14px; }
+    @@media print { .toolbar { display:none; } body{background:#fff;} }
+</style>
+</head>
+<body>
+<div class="toolbar"><button onclick="window.print()">🖨 Print</button></div>
+<div class="slip">
+    <h3>Allied School — Sadiqabad</h3>
+    <div class="text-muted" style="font-size:12px;color:#6b5d54;">Salary Slip — @monthNames[Model.Month] @Model.Year</div>
+    <hr />
+    <div class="row-line"><span>Staff Name</span><span>@Model.Staff?.FullName</span></div>
+    <div class="row-line"><span>Designation</span><span>@Model.Staff?.Designation</span></div>
+    <div class="row-line"><span>Base Salary</span><span>Rs @Model.BaseSalary</span></div>
+    <div class="row-line"><span>Allowances</span><span>Rs @Model.Allowances</span></div>
+    <div class="row-line"><span>Fines</span><span>- Rs @Model.Fines</span></div>
+    <div class="row-line"><span>Deductions</span><span>- Rs @Model.Deductions</span></div>
+    <div class="total"><span>Net Payable</span><span>Rs @Model.NetPayable</span></div>
+</div>
+</body>
+</html>

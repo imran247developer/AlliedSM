@@ -1,0 +1,16 @@
+@model AlliedSM.Models.Subject
+@{
+    ViewData["Title"] = "Edit Subject";
+}
+<h2>Edit Subject</h2>
+<form asp-action="Edit" method="post" class="row g-3" style="max-width:400px;">
+    <input type="hidden" asp-for="SubjectId" />
+    <div class="col-12">
+        <label class="form-label">Subject Name</label>
+        <input asp-for="SubjectName" class="form-control" />
+    </div>
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

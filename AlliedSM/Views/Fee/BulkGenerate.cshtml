@@ -1,0 +1,28 @@
+@model AlliedSM.Models.BulkGenerateViewModel
+@{
+    ViewData["Title"] = "Bulk Generate Challans";
+}
+
+<h2>Bulk Generate Challans — Class Wise</h2>
+<p class="text-muted">
+    Challans will be generated at once for all active students of the class. Old unpaid challans will automatically be added to Arrears.
+</p>
+
+<form asp-action="BulkGenerate" method="post" class="row g-3" style="max-width:480px;">
+    <div class="col-12">
+        <label class="form-label">Class</label>
+        <select asp-for="SchoolClassId" class="form-select" asp-items="ViewBag.Classes"></select>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Due Date</label>
+        <input asp-for="DueDate" class="form-control" type="date" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Late Fee Fine </label>
+        <input asp-for="LateFeeFineIfOverdue" class="form-control" />
+    </div>
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Generate & Preview Print</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

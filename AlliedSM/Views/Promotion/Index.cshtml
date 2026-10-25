@@ -1,0 +1,74 @@
+@model AlliedSM.Models.PromotionViewModel
+@{
+    ViewData["Title"] = "Student Promotion";
+}
+
+<h2>Student Promotion / Bulk Transfer</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="fromClassId" class="form-select" asp-items="ViewBag.FromClasses" onchange="this.form.submit()">
+            <option value="">Source Class selection </option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="fromSectionId" class="form-select" asp-items="ViewBag.Sections" onchange="this.form.submit()">
+            <option value="">All Sections</option>
+        </select>
+    </div>
+</form>
+
+@if (Model.Students.Any())
+{
+    <form asp-action="Transfer" method="post">
+        <input type="hidden" asp-for="FromClassId" />
+        <input type="hidden" asp-for="FromSectionId" />
+
+        <div class="row g-2 mb-3 align-items-end">
+            <div class="col-auto">
+                <label class="form-label">Move to Class</label>
+                <select asp-for="ToClassId" class="form-select" asp-items="ViewBag.ToClasses"></select>
+            </div>
+            <div class="col-auto">
+                <label class="form-label">Move to Section</label>
+                <select asp-for="ToSectionId" class="form-select" asp-items="ViewBag.Sections">
+                    <option value="">— same section —</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="table table-striped align-middle">
+            <thead><tr><th><input type="checkbox" id="chkAll" /></th><th>Reg. No</th><th>Student Name</th></tr></thead>
+            <tbody>
+            @for (int i = 0; i < Model.Students.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" asp-for="Students[i].Selected" class="rowChk" />
+                        <input type="hidden" asp-for="Students[i].StudentId" />
+                        <input type="hidden" asp-for="Students[i].RegistrationNo" />
+                        <input type="hidden" asp-for="Students[i].StudentName" />
+                    </td>
+                    <td>@Model.Students[i].RegistrationNo</td>
+                    <td>@Model.Students[i].StudentName</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Promote / Transfer Selected</button>
+        <button type="submit" formaction="@Url.Action("MarkLeft")" class="btn btn-outline-danger" onclick="return confirm('Selected students ko school-leave mark karna hai?')">Mark as Left School</button>
+    </form>
+
+    <script>
+        document.getElementById('chkAll').addEventListener('change', function () {
+            document.querySelectorAll('.rowChk').forEach(c => c.checked = this.checked);
+        });
+    </script>
+}
+else if (Model.FromClassId.HasValue)
+{
+    <div class="alert alert-info"> No active student fount in this class.</div>
+}

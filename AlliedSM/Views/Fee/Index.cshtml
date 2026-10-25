@@ -1,0 +1,260 @@
+@model List<AlliedSM.Models.FeeChallan>
+@using AlliedSM.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Fee & Challans";
+}
+
+<h2 class="mb-3">Fee &amp; Challans</h2>
+
+<!-- ===================== FILTER BAR (unchanged from your existing page) ===================== -->
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+    <select id="classFilter" class="form-select form-select-sm" style="width:auto;">
+        <option value="">All Classes</option>
+        @if (ViewBag.Classes != null)
+        {
+            foreach (SelectListItem c in (SelectList)ViewBag.Classes)
+            {
+                <option value="@c.Value">@c.Text</option>
+            }
+        }
+    </select>
+
+    <select id="statusFilter" class="form-select form-select-sm" style="width:auto;">
+        <option value="">Status: All</option>
+        <option value="Paid">Paid</option>
+        <option value="Unpaid">Unpaid</option>
+        <option value="Overdue">Overdue</option>
+    </select>
+
+    <input type="text" id="searchBox" class="form-control form-control-sm" style="width:220px;" placeholder="Voucher # or Student Name" />
+
+    <a asp-action="Defaulters" class="btn btn-outline-danger btn-sm ms-auto">Defaulters List</a>
+    <a asp-action="BulkGenerate" class="btn btn-outline-dark btn-sm">Bulk Generate</a>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ New Challan</a>
+</div>
+
+<table class="table table-light table-striped table-hover align-middle shadow-sm" id="feeTable"
+       style="background:#ffffff; border-radius:10px; overflow:hidden;">
+    <thead>
+        <tr>
+            <th><input type="checkbox" id="checkAll" /></th>
+            <th>Voucher #</th>
+            <th>Student</th>
+            <th>Class</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr data-class="@c.Student?.SchoolClassId" data-status="@c.Status"
+                data-search="@(c.VoucherNo + " " + c.Student?.StudentName)">
+                <td><input type="checkbox" name="selectedIds" value="@c.FeeChallanId" class="rowCheck" /></td>
+                <td>@c.VoucherNo</td>
+                <td>@c.Student?.StudentName</td>
+                <td>@c.Student?.SchoolClass?.ClassName</td>
+                <td>Rs @c.TotalPayable.ToString("N2")</td>
+                <td>@c.DueDate.ToString("dd-MMM-yyyy")</td>
+                <td>
+                    @if (c.Status == ChallanStatus.Paid)
+                    {
+                        <span class="badge bg-success">Paid</span>
+                    }
+                    else if (c.Status == ChallanStatus.Overdue)
+                    {
+                        <span class="badge bg-warning text-dark">Overdue</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Unpaid</span>
+                    }
+                </td>
+                <td class="text-end">
+                    <a asp-action="Print" asp-route-ids="@c.FeeChallanId" class="btn btn-sm"
+                       style="background:#cfe8ff; color:#084298; border:1px solid #9ec5fe;">Print</a>
+                    <a asp-action="Edit" asp-route-id="@c.FeeChallanId" class="btn btn-sm btn-primary">Edit</a>
+
+                    @if (c.Status != ChallanStatus.Paid)
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-success"
+                                onclick="openPayModal(@c.FeeChallanId, '@c.VoucherNo')">
+                            Mark Paid
+                        </button>
+                    }
+
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            onclick="deleteChallan(@c.FeeChallanId, '@c.VoucherNo')">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button type="button" class="btn btn-dark" onclick="bulkPrintSelected()">Bulk Print Selected</button>
+<button type="button" class="btn btn-danger" onclick="deleteSelected()">Delete Selected</button>
+<button type="button" class="btn btn-outline-danger" onclick="deleteAll()">Delete All</button>
+
+<!-- Hidden forms used by deleteChallan() / deleteSelected() / deleteAll() below — a POST
+     form is required because FeeController.Delete and DeleteSelected are both [HttpPost];
+     a plain <a> link (GET) is exactly what caused the earlier 405 error. -->
+<form id="deleteOneForm" method="post" action="/Fee/Delete/0" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+<form id="deleteSelectedForm" method="post" action="/Fee/DeleteSelected" style="display:none;">
+    <input type="hidden" name="ids" id="deleteSelectedIds" value="" />
+    @Html.AntiForgeryToken()
+</form>
+
+<!-- =========================================================================================
+     CUSTOM "MARK PAID" POPUP  — plain HTML + vanilla JS only.
+     No Bootstrap JS, no data-bs-toggle, no data-toggle. Works no matter which Bootstrap
+     version (or none at all) is loaded on the page, because opening/closing and submitting
+     are both done by our own JavaScript below.
+     ========================================================================================= -->
+<div id="payOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:4000;"></div>
+
+<div id="payBox" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+     z-index:4001; background:#1e1e1e; color:#fff; width:95%; max-width:480px; border-radius:10px;
+     box-shadow:0 10px 40px rgba(0,0,0,.5); padding:0; overflow:hidden;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #333;">
+        <h5 id="payTitle" style="margin:0;">Mark Paid</h5>
+        <button type="button" onclick="closePayModal()" style="background:none;border:none;color:#aaa;font-size:22px;line-height:1;cursor:pointer;">&times;</button>
+    </div>
+
+    <!-- IMPORTANT: Confirm Paid and the fields it needs are ALL inside this one <form>.
+         That is exactly what broke "Confirm Paid" before — if the button lives outside the
+         <form> tag, clicking it has nothing to submit and nothing happens. -->
+    <form id="payForm" method="post" action="/Fee/MarkPaid">
+        <input type="hidden" name="id" id="payChallanId" value="" />
+        @Html.AntiForgeryToken()
+
+        <div style="padding:20px;">
+            <label class="form-label">Payment Method</label>
+            <select name="method" class="form-select mb-3" required>
+                <option value="Cash">Cash</option>
+                <option value="BankTransfer">Bank Transfer</option>
+                <option value="JazzCash">JazzCash</option>
+                <option value="EasyPaisa">EasyPaisa</option>
+            </select>
+
+            <label class="form-label">Transaction Reference (optional)</label>
+            <input type="text" name="reference" class="form-control" placeholder="" />
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; padding:16px 20px; border-top:1px solid #333;">
+            <button type="button" class="btn btn-secondary" onclick="closePayModal()">Cancel</button>
+            <!-- type="submit" is the fix: this button now actually submits payForm above. -->
+            <button type="submit" id="confirmPaidBtn" class="btn btn-success">Confirm Paid</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    function openPayModal(id, voucherNo) {
+        document.getElementById('payChallanId').value = id;
+        document.getElementById('payTitle').textContent = 'Mark ' + voucherNo + ' Paid';
+        document.getElementById('payOverlay').style.display = 'block';
+        document.getElementById('payBox').style.display = 'block';
+    }
+
+    function closePayModal() {
+        document.getElementById('payOverlay').style.display = 'none';
+        document.getElementById('payBox').style.display = 'none';
+    }
+
+    // Close on overlay click
+    document.getElementById('payOverlay').addEventListener('click', closePayModal);
+
+    // Close on ESC key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closePayModal();
+    });
+
+    // Visible feedback the instant Confirm Paid is clicked, so it never again
+    // *looks* like "no response" while the page is posting back to the server.
+    document.getElementById('payForm').addEventListener('submit', function () {
+        var btn = document.getElementById('confirmPaidBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+    });
+
+    // ---- filter bar wiring (class / status / search) ----
+    function applyFeeFilters() {
+        var cls = document.getElementById('classFilter').value;
+        var status = document.getElementById('statusFilter').value;
+        var q = document.getElementById('searchBox').value.toLowerCase();
+
+        document.querySelectorAll('#feeTable tbody tr').forEach(function (row) {
+            var okClass = !cls || row.dataset.class === cls;
+            var okStatus = !status || row.dataset.status === status;
+            var okSearch = !q || row.dataset.search.toLowerCase().includes(q);
+            row.style.display = (okClass && okStatus && okSearch) ? '' : 'none';
+        });
+    }
+    document.getElementById('classFilter').addEventListener('change', applyFeeFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFeeFilters);
+    document.getElementById('searchBox').addEventListener('input', applyFeeFilters);
+
+    // "Bulk Print Selected" — no BulkPrint action exists on the server, so instead
+    // of posting a form we just collect the checked rows' ids and send the browser
+    // straight to the same Print action the single "Print" button already uses
+    // (GET /Fee/Print?ids=11,12,13), which already handles a list of challans.
+    function bulkPrintSelected() {
+        var ids = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => cb.value);
+        if (ids.length === 0) {
+            alert('Please select at least one challan to print.');
+            return;
+        }
+        window.location.href = '/Fee/Print?ids=' + ids.join(',');
+    }
+
+    document.getElementById('checkAll').addEventListener('change', function () {
+        document.querySelectorAll('.rowCheck').forEach(cb => cb.checked = this.checked);
+    });
+
+    // ---- Delete (single row) — POSTs via the hidden #deleteOneForm, since
+    // FeeController.Delete only accepts POST. A plain <a> link sends GET,
+    // which is exactly what produced the "405 Method Not Allowed" error.
+    function deleteChallan(id, voucherNo) {
+        if (!confirm('Delete challan ' + voucherNo + '? This cannot be undone.')) return;
+        var form = document.getElementById('deleteOneForm');
+        form.action = '/Fee/Delete/' + id;
+        form.submit();
+    }
+
+    // ---- Delete Selected — same checked rows used by Bulk Print, posted to
+    // the new DeleteSelected action (comma-separated ids).
+    function deleteSelected() {
+        var ids = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => cb.value);
+        if (ids.length === 0) {
+            alert('Please select at least one challan to delete.');
+            return;
+        }
+        if (!confirm('Delete ' + ids.length + ' selected challan(s)? This cannot be undone.')) return;
+        document.getElementById('deleteSelectedIds').value = ids.join(',');
+        document.getElementById('deleteSelectedForm').submit();
+    }
+
+    // ---- Delete All — every challan currently visible in the table (i.e. respects
+    // whatever class/status/search filter is applied), not just the checked rows.
+    function deleteAll() {
+        var ids = Array.from(document.querySelectorAll('#feeTable tbody tr'))
+            .filter(row => row.style.display !== 'none')
+            .map(row => row.querySelector('.rowCheck').value);
+        if (ids.length === 0) {
+            alert('No challans to delete.');
+            return;
+        }
+        if (!confirm('Delete ALL ' + ids.length + ' challan(s) shown in this list? This cannot be undone.')) return;
+        document.getElementById('deleteSelectedIds').value = ids.join(',');
+        document.getElementById('deleteSelectedForm').submit();
+    }
+</script>
+}

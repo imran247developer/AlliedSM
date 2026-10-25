@@ -1,0 +1,67 @@
+@model IEnumerable<AlliedSM.Models.Student>
+
+@{
+    ViewData["Title"] = "Students";
+}
+
+<h2>Students</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="classId" class="form-select" asp-items="ViewBag.Classes" onchange="this.form.submit()">
+            <option value="">All Classes</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="sectionId" class="form-select" asp-items="ViewBag.Sections" onchange="this.form.submit()">
+            <option value="">All Sections</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="text" name="search" class="form-control" placeholder="Search name or reg. no" value="@Context.Request.Query["search"]" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+    </div>
+    <div class="col-auto ms-auto">
+        <a asp-action="Create" class="btn btn-primary">+ New Admission</a>
+        <a asp-controller="ExcelImport" asp-action="Index" class="btn btn-outline-primary me-2">Import Excel</a>
+    </div>
+</form>
+
+<table class="table table-striped table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Reg. No</th>
+            <th>Student Name</th>
+            <th>Father Name</th>
+            <th>Class</th>
+            <th>Section</th>
+            <th>Parent Mobile</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.RegistrationNo</td>
+            <td>@s.StudentName</td>
+            <td>@s.FatherName</td>
+            <td>@s.SchoolClass?.ClassName</td>
+            <td>@s.Section?.SectionName</td>
+            <td>@s.ParentMobile</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-secondary">View</a>
+                <a asp-action="Edit" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

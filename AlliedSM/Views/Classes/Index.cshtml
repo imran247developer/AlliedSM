@@ -1,0 +1,35 @@
+@model IEnumerable<AlliedSM.Models.SchoolClass>
+@{
+    ViewData["Title"] = "Classes";
+}
+
+<h2>Classes</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-primary">+ Add Class</a>
+    <a asp-controller="Subjects" asp-action="Index" class="btn btn-outline-dark">Manage Subjects</a>
+    <a asp-controller="ClassSubjects" asp-action="Index" class="btn btn-outline-dark">Subject Allocation</a>
+</div>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Class</th><th>Sections</th><th>Total Students</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var c in Model)
+    {
+        <tr>
+            <td>@c.ClassName</td>
+            <td>@string.Join(", ", c.Sections?.Select(s => s.SectionName) ?? new List<string>())</td>
+            <td>@(c.Students?.Count ?? 0)</td>
+            <td>
+                <a asp-controller="Sections" asp-action="Index" asp-route-classId="@c.SchoolClassId" class="btn btn-sm btn-outline-secondary">Manage Sections</a>
+                <a asp-action="Edit" asp-route-id="@c.SchoolClassId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@c.SchoolClassId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this class?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

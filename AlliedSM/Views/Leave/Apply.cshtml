@@ -1,0 +1,16 @@
+@model AlliedSM.Models.LeaveRequest
+@{
+    ViewData["Title"] = "Apply for Leave";
+}
+<h2>Apply for Leave</h2>
+<form asp-action="Apply" method="post" class="row g-3" style="max-width:450px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-6"><label class="form-label">From Date</label><input asp-for="FromDate" class="form-control" type="date" /></div>
+    <div class="col-6"><label class="form-label">To Date</label><input asp-for="ToDate" class="form-control" type="date" /></div>
+    <div class="col-12"><label class="form-label">Reason</label><textarea asp-for="Reason" class="form-control" rows="3"></textarea></div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

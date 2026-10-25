@@ -1,0 +1,28 @@
+@model IEnumerable<AlliedSM.Models.Subject>
+@{
+    ViewData["Title"] = "Subjects";
+}
+
+<h2>Subjects (All Classes)</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<a asp-controller="Classes" asp-action="Index" class="btn btn-outline-secondary mb-3">← Back to Classes</a>
+<a asp-action="Create" class="btn btn-primary mb-3">+ Add Subject</a>
+
+<table class="table table-striped align-middle" style="max-width:500px;">
+    <thead><tr><th>Subject</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.SubjectName</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@s.SubjectId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@s.SubjectId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this subject?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

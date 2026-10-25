@@ -1,0 +1,18 @@
+@model AlliedSM.Models.Homework
+@{
+    ViewData["Title"] = "Edit Homework";
+}
+<h2>Edit Homework</h2>
+<form asp-action="Edit" method="post" class="row g-3" style="max-width:500px;">
+    <input type="hidden" asp-for="HomeworkId" />
+    <div class="col-6"><label class="form-label">Class</label><select asp-for="SchoolClassId" class="form-select" asp-items="ViewBag.SchoolClassId"></select></div>
+    <div class="col-6"><label class="form-label">Subject</label><select asp-for="SubjectId" class="form-select" asp-items="ViewBag.SubjectId"></select></div>
+    <div class="col-12"><label class="form-label">Description</label><textarea asp-for="Description" class="form-control" rows="3"></textarea></div>
+    <div class="col-6"><label class="form-label">Assigned Date</label><input asp-for="AssignedDate" class="form-control" type="date" /></div>
+    <div class="col-6"><label class="form-label">Due Date</label><input asp-for="DueDate" class="form-control" type="date" /></div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

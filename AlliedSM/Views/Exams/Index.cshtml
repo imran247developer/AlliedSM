@@ -1,0 +1,40 @@
+@model IEnumerable<AlliedSM.Models.Exam>
+@{
+    ViewData["Title"] = "Exams / Date Sheet";
+}
+
+<h2>Exams / Date Sheet Setup</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="classId" class="form-select" asp-items="ViewBag.Classes" onchange="this.form.submit()">
+            <option value="">All Classes</option>
+        </select>
+    </div>
+    <div class="col-auto ms-auto">
+        <a asp-action="Create" class="btn btn-primary">+ Set Up Exam</a>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Exam Name</th><th>Class</th><th>Subject</th><th>Total Marks</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var e in Model)
+    {
+        <tr>
+            <td>@e.ExamName</td>
+            <td>@e.SchoolClass?.ClassName</td>
+            <td>@e.Subject?.SubjectName</td>
+            <td>@e.TotalMarks</td>
+            <td>
+                <a asp-controller="Marks" asp-action="BulkEntry" asp-route-examId="@e.ExamId" class="btn btn-sm btn-primary">Enter Marks</a>
+                <a asp-action="Edit" asp-route-id="@e.ExamId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@e.ExamId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this exam and its marks?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,55 @@
+@model IEnumerable<AlliedSM.Models.Expense>
+@{
+    ViewData["Title"] = "Expense Ledger";
+}
+
+<h2>School Expense Ledger</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="category" class="form-select">
+            <option value="">All Categories</option>
+            <option>Utility</option><option>Maintenance</option><option>Stationery</option>
+            <option>PettyCash</option><option>Salary</option><option>Other</option>
+        </select>
+    </div>
+    <div class="col-auto"><input type="date" name="fromDate" class="form-control" /></div>
+    <div class="col-auto"><input type="date" name="toDate" class="form-control" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Filter</button></div>
+    <div class="col-auto ms-auto">
+        <a asp-controller="Accounts" asp-action="Index" class="btn btn-outline-dark">Back to Dashboard</a>
+        <a asp-action="Create" class="btn btn-primary">+ Add Expense</a>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var e in Model)
+    {
+        <tr>
+            <td>@e.ExpenseDate.ToString("dd-MMM-yyyy")</td>
+            <td>@e.Category</td>
+            <td>@e.Description</td>
+            <td>Rs @e.Amount</td>
+            <td>
+                @if (e.IsApproved) { <span class="badge bg-success">Approved</span> }
+                else { <span class="badge bg-warning text-dark">Pending</span> }
+            </td>
+            <td>
+                @if (!e.IsApproved)
+                {
+                    <form asp-action="Approve" asp-route-id="@e.ExpenseId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-outline-success">Approve</button>
+                    </form>
+                }
+                <a asp-action="Edit" asp-route-id="@e.ExpenseId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@e.ExpenseId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this expense?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

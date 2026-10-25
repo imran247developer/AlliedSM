@@ -1,0 +1,31 @@
+@model AlliedSM.Models.Exam
+@{
+    ViewData["Title"] = "Set Up Exam";
+}
+<h2>Set Up Exam</h2>
+<p class="text-muted">Total marks set here once.</p>
+
+<form asp-action="Create" method="post" class="row g-3" style="max-width:450px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-12">
+        <label class="form-label">Exam Name</label>
+        <input asp-for="ExamName" class="form-control" placeholder="e.g. Mid-Term 2026" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Class</label>
+        <select asp-for="SchoolClassId" class="form-select" asp-items="ViewBag.SchoolClassId"></select>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Subject</label>
+        <select asp-for="SubjectId" class="form-select" asp-items="ViewBag.SubjectId"></select>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Total Marks</label>
+        <input asp-for="TotalMarks" class="form-control" />
+    </div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

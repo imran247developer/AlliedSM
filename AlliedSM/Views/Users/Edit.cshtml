@@ -1,0 +1,46 @@
+@model AlliedSM.Models.EditUserViewModel
+@{
+    ViewData["Title"] = "Edit Login";
+}
+
+<h2>Edit Login — @Model.Email</h2>
+
+<form asp-action="Edit" method="post" class="row g-3" style="max-width:500px;">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="col-12">
+        <label class="form-label">Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Mobile Number</label>
+        <input asp-for="PhoneNumber" class="form-control" placeholder="03001234567" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Role</label>
+        <select asp-for="Role" class="form-select">
+            @foreach (var r in (List<string>)ViewBag.Roles)
+            {
+                <option value="@r">@r</option>
+            }
+        </select>
+    </div>
+    <div class="col-12 form-check">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label class="form-check-label">Active (uncheck to deactivate login)</label>
+    </div>
+    <div class="col-12">
+        <label class="form-label">New Password <small class="text-muted">(Leave it Blank if no changing)</small></label>
+        <input asp-for="NewPassword" class="form-control" type="password" />
+    </div>
+
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

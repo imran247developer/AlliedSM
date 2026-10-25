@@ -1,0 +1,27 @@
+@model AlliedSM.Models.FeeChallan
+@{
+    ViewData["Title"] = "New Challan";
+}
+
+<h2>New Fee Challan</h2>
+
+<form asp-action="Create" method="post" class="row g-3" style="max-width:500px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-12">
+        <label class="form-label">Student</label>
+        <select asp-for="StudentId" class="form-select" asp-items="ViewBag.Students"></select>
+    </div>
+    <div class="col-6"><label class="form-label">Tuition Fee</label><input asp-for="TuitionFee" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">Exam Fee</label><input asp-for="ExamFee" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">Lab Fee</label><input asp-for="LabFee" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">Admission Fee <small class="text-muted">(one-time)</small></label><input asp-for="AdmissionFee" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">Transport Fee</label><input asp-for="TransportFee" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">Arrears</label><input asp-for="ArrearsAmount" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">Late Fee Fine</label><input asp-for="LateFeeFine" class="form-control" /></div>
+    <div class="col-12"><label class="form-label">Due Date</label><input asp-for="DueDate" class="form-control" type="date" /></div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Generate Challan</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

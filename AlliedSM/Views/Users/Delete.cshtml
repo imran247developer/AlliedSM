@@ -1,0 +1,15 @@
+@model AlliedSM.Data.ApplicationUser
+@{
+    ViewData["Title"] = "Delete Login";
+}
+
+<h2>Delete Login</h2>
+<div class="alert alert-warning">
+    Kya aap <strong>@Model.FullName</strong> (@Model.Email)  login permanently will delete Permanently?
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>

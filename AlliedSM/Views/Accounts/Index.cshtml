@@ -1,0 +1,98 @@
+@model AlliedSM.Models.AccountsDashboardViewModel
+@{
+    ViewData["Title"] = "School Accounts";
+}
+
+<h2>School Accounts</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto"><input type="date" name="fromDate" class="form-control" value="@Model.FromDate.ToString("yyyy-MM-dd")" /></div>
+    <div class="col-auto"><input type="date" name="toDate" class="form-control" value="@Model.ToDate.ToString("yyyy-MM-dd")" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Filter</button></div>
+    <div class="col-auto ms-auto">
+        <form asp-action="SendDayEndReport" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-outline-dark">📩 Send Day-End Report to Principal</button>
+        </form>
+        <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary">Expense Ledger</a>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <div class="text-muted small">Income (selected range)</div>
+            <div class="fs-4 fw-bold text-success">Rs @Model.TotalIncome</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <div class="text-muted small">Expense (selected range)</div>
+            <div class="fs-4 fw-bold text-danger">Rs @Model.TotalExpense</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <div class="text-muted small">Net Balance</div>
+            <div class="fs-4 fw-bold" style="color:#3b6fed;">Rs @Model.NetBalance</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <div class="text-muted small">Today's Fee Collection</div>
+            <div class="fs-4 fw-bold">Rs @Model.TodayIncome</div>
+        </div></div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5>Income vs Expense (daily)</h5>
+            <div class="d-flex align-items-end gap-2" style="height:150px;">
+                @{ var maxVal = Math.Max(Model.DailyIncome.DefaultIfEmpty(new AlliedSM.Models.DailyTotal()).Max(d => d.Amount),
+                                          Model.DailyExpense.DefaultIfEmpty(new AlliedSM.Models.DailyTotal()).Max(d => d.Amount));
+                   maxVal = maxVal == 0 ? 1 : maxVal; }
+                @for (int i = 0; i < Model.DailyIncome.Count; i++)
+                {
+                    var incH = (int)(Model.DailyIncome[i].Amount / maxVal * 120);
+                    var expH = (int)(Model.DailyExpense[i].Amount / maxVal * 120);
+                    <div class="text-center" style="flex:1;">
+                        <div class="d-flex align-items-end justify-content-center gap-1" style="height:120px;">
+                            <div style="width:10px;height:@(incH)px;background:#16a34a;border-radius:3px 3px 0 0;" title="Income Rs @Model.DailyIncome[i].Amount"></div>
+                            <div style="width:10px;height:@(expH)px;background:#dc2626;border-radius:3px 3px 0 0;" title="Expense Rs @Model.DailyExpense[i].Amount"></div>
+                        </div>
+                        <div class="small text-muted">@Model.DailyIncome[i].Date.ToString("dd/MM")</div>
+                    </div>
+                }
+            </div>
+            <div class="small text-muted mt-2">🟩 Income &nbsp; 🟥 Expense</div>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5>Recent Expenses</h5>
+            @foreach (var e in Model.RecentExpenses)
+            {
+                <div class="d-flex justify-content-between small border-bottom py-1">
+                    <span>@e.Description</span>
+                    <span>Rs @e.Amount</span>
+                </div>
+            }
+        </div></div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mt-3"><div class="card-body">
+    <h5>Recent Fee Payments (Income)</h5>
+    <table class="table table-sm">
+        <thead><tr><th>Voucher #</th><th>Student</th><th>Amount</th><th>Paid Via</th><th>Date</th></tr></thead>
+        <tbody>
+        @foreach (var c in Model.RecentIncome)
+        {
+            <tr><td>@c.VoucherNo</td><td>@c.Student?.StudentName</td><td>Rs @c.TotalPayable</td><td>@c.PaidVia</td><td>@c.PaidDate?.ToString("dd-MMM-yyyy")</td></tr>
+        }
+        </tbody>
+    </table>
+</div></div>

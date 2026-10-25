@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Import Students from Excel";
+}
+
+<h2 class="mb-3">Import Students from Excel</h2>
+
+@if (TempData["ImportError"] != null)
+{
+    <div class="alert alert-danger">@TempData["ImportError"]</div>
+}
+
+<div class="card shadow-sm mb-4" style="max-width:760px;">
+    <div class="card-body">
+        <h5 class="card-title">Step 1 - Choose your Excel file</h5>
+        <p class="text-muted mb-3">
+            The first row must contain these headings (extra columns such as <b>Sr.No</b> are ignored):
+            <b>Student Name</b>, <b>Father Name</b>, <b>ST.ID</b> (optional), <b>Class</b>, <b>Student Fee</b>.
+        </p>
+
+        <form asp-action="Preview" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input type="file" name="file" accept=".xlsx" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Upload &amp; Preview</button>
+            <a asp-action="Template" class="btn btn-outline-secondary">Download blank template</a>
+            <a asp-controller="Students" asp-action="Index" class="btn btn-outline-secondary">Back to Students</a>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm" style="max-width:760px;">
+    <div class="card-body">
+        <h6 class="card-title">What happens during the import</h6>
+        <ul class="mb-0">
+            <li>You review how each Excel class maps to a class in the system before anything is saved.</li>
+            <li>Registration numbers are generated automatically (ALD-2026-0001 ...), or the ST.ID from the sheet is used when it is filled in.</li>
+            <li>The Student Fee becomes the student's monthly Tuition Fee.</li>
+            <li>Parent mobile, date of birth and gender are not in your sheet, so they get placeholders - update them later using Edit.</li>
+            <li>Students who already exist (same name, father name and class) are skipped, so importing the same file twice is safe.</li>
+        </ul>
+    </div>
+</div>

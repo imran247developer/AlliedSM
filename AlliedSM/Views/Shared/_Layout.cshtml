@@ -1,0 +1,187 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AlliedSM.Data.ApplicationUser> SignInManager
+@{
+    var quotes = new (string Text, string Author)[]
+            {
+
+   (
+        "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ\n(پڑھیے اپنے رب کے نام سے جس نے پیدا فرمایا۔)",
+        "القرآن (سورۃ العلق: 1)"
+    ),
+    (
+        "وَأَن لَّيْسَ لِلْإِنسَانِ إِلَّا مَا سَعَىٰ\n(اور یہ کہ انسان کے لیے وہی کچھ ہے جس کی اس نے کوشش کی۔)",
+        "القرآن (سورۃ النجم: 39)"
+    ),
+    (
+        "يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ\n(اللہ تعالی تم میں سے ان لوگوں کے درجات بلند فرماتا ہے جو ایمان لائے اور جنہیں علم عطا کیا گیا۔)",
+        "القرآن (سورۃ المجادلہ: 11)"
+    ),
+    (
+        "رَّبِّ زِدْنِي عِلْمًا\n(اے میرے رب! میرے علم میں اضافہ فرما۔)",
+        "القرآن (سورۃ طٰہٰ: 114)"
+    ),
+    (
+        "سَارِعُوا إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ\n(اور اپنے رب کی بخشش اور مغفرت کی طرف تیزی سے آگے بڑھو۔)",
+        "القرآن (سورۃ آل عمران: 133)"
+    ),
+    (
+        "وَتَوَكَّلْ عَلَى الْحَيِّ الَّذِي لَا يَمُوتُ\n(اور اس زندہ ذات پر بھروسہ رکھو جسے کبھی موت نہیں آنی۔)",
+        "القرآن (سورۃ الفرقان: 58)"
+    ),
+    (
+        "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا • إِنَّ مَعَ الْعُسْرِ يُسْرًا\n(پس یقیناً مشکل کے ساتھ آسانی ہے، بیشک مشکل کے ساتھ آسانی ہے۔)",
+        "القرآن (سورۃ الشرح: 5-6)"
+    ),
+    (
+        "وَهُوَ الَّذِي جَعَلَ اللَّيْلَ وَالنَّهَارَ خِلْفَةً لِّمَنْ أَرَادَ أَن يَذَّكَّرَ أَوْ أَرَادَ شُكُورًا\n(اور وہی ہے جس نے رات اور دن کو ایک دوسرے کے پیچھے آنے والا بنایا اس شخص کے لیے جو نصیحت حاصل کرنا چاہے یا شکر ادا کرنا چاہے۔)",
+        "القرآن (سورۃ الفرقان: 62)"
+    ),
+    (
+        "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ\n(بیشک اللہ صبر کرنے والوں کے ساتھ ہے۔)",
+        "القرآن (سورۃ البقرہ: 153)"
+    ),
+    (
+        "ادْعُونِي أَسْتَجِبْ لَكُمْ\n(تم مجھ سے دعا کرو، میں تمہاری دعا قبول کروں گا۔)",
+        "القرآن (سورۃ غافر: 60)"
+    )
+    };
+    var todayQuote = quotes[new Random(Guid.NewGuid().GetHashCode()).Next(quotes.Length)];
+
+    var hour = DateTime.Now.Hour;
+    var greeting = hour < 12 ? "Subh bakhair" : hour < 17 ? "Assalam-o-Alaikum" : "Shaam bakhair";
+    var isDashboard = ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Allied School Sadiqabad</title>
+
+    <link rel="stylesheet" href="~/twitter-bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+<body>
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="db-backdrop" id="dbBackdrop"></div>
+
+    <aside class="db-sidebar" id="dbSidebar">
+        <div class="db-brand">
+            <div class="db-logo">AS</div>
+            <div>
+                <div class="db-title">Allied School</div>
+                <div class="db-sub">Sadiqabad Campus</div>
+            </div>
+        </div>
+
+        <nav class="db-nav">
+            <a class="nav-link @(isDashboard ? "active" : "")" asp-controller="Dashboard" asp-action="Index">
+                <span class="db-icon">&#9673;</span> Dashboard
+            </a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="db-section-label">Academics</div>
+                <a class="nav-link" asp-controller="Students" asp-action="Index"><span class="db-icon">&#128100;</span> Students</a>
+                <a class="nav-link" asp-controller="Classes" asp-action="Index"><span class="db-icon">&#127891;</span> Classes</a>
+                <a class="nav-link" asp-controller="Exams" asp-action="Index"><span class="db-icon">&#128221;</span> Exams</a>
+                <a class="nav-link" asp-controller="Promotion" asp-action="Index"><span class="db-icon">&#8593;</span> Promotion</a>
+
+                <div class="db-section-label">People</div>
+                <a class="nav-link" asp-controller="Staff" asp-action="Index"><span class="db-icon">&#128188;</span> Staff</a>
+                <a class="nav-link" asp-controller="Users" asp-action="Index"><span class="db-icon">&#128272;</span> Logins</a>
+                <a class="nav-link" asp-controller="Certificates" asp-action="Index"><span class="db-icon">&#127915;</span> ID / Certificates</a>
+                <a class="nav-link" asp-controller="Biometric" asp-action="Index"><span class="db-icon">&#128721;</span> Biometric</a>
+            }
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+            {
+                <div class="db-section-label">Classroom</div>
+                <a class="nav-link" asp-controller="Attendance" asp-action="Mark"><span class="db-icon">&#10003;</span> Attendance</a>
+            }
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Accountant"))
+            {
+                <div class="db-section-label">Finance</div>
+                <a class="nav-link" asp-controller="Fee" asp-action="Index"><span class="db-icon">&#128179;</span> Fee & Challans</a>
+                <a class="nav-link" asp-controller="Accounts" asp-action="Index"><span class="db-icon">&#128200;</span> Accounts</a>
+                <a class="nav-link" asp-controller="Payroll" asp-action="Index"><span class="db-icon">&#128181;</span> Payroll</a>
+                <a class="nav-link" asp-controller="Reports" asp-action="Index"><span class="db-icon">&#128202;</span> Reports</a>
+            }
+
+            <div class="db-section-label">Communication</div>
+            <a class="nav-link" asp-controller="Homework" asp-action="Index"><span class="db-icon">&#128218;</span> Homework</a>
+            <a class="nav-link" asp-controller="Notices" asp-action="Index"><span class="db-icon">&#128276;</span> Notices</a>
+            <a class="nav-link" asp-controller="Leave" asp-action="Index"><span class="db-icon">&#128197;</span> Leave</a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="db-section-label">System</div>
+                <a class="nav-link" asp-controller="Settings" asp-action="Index"><span class="db-icon">&#9881;</span> Settings</a>
+            }
+        </nav>
+
+        <div class="db-user">
+            <div class="db-avatar">@(User.Identity?.Name?.Substring(0,1).ToUpper())</div>
+            <div>
+                <div class="db-uname">@User.Identity?.Name</div>
+                <div class="db-urole">@(User.IsInRole("Admin") ? "Administrator" : User.IsInRole("Teacher") ? "Teacher" : User.IsInRole("Accountant") ? "Accountant" : "Parent")</div>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <header class="db-topbar">
+        <div class="d-flex align-items-center">
+            <button class="db-toggle-btn" id="dbToggleBtn">&#9776;</button>
+            <div>
+                <div class="db-page-title">@ViewData["Title"]</div>
+                @if (isDashboard)
+                {
+                    <div class="db-page-date">@greeting, @(User.Identity?.Name) &middot; @DateTime.Now.ToString("dddd, dd MMMM yyyy")</div>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main class="db-content">
+        @if (isDashboard)
+        {
+            <div class="db-quote-banner">
+                <div class="db-quote-mark">&#8220;</div>
+                <div>
+                    <div class="db-quote-text">@todayQuote.Text</div>
+                    <div class="db-quote-author">— @todayQuote.Author</div>
+                </div>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <script>
+        const sidebar = document.getElementById('dbSidebar');
+        const backdrop = document.getElementById('dbBackdrop');
+        const toggleBtn = document.getElementById('dbToggleBtn');
+        function toggleSidebar() {
+            sidebar.classList.toggle('db-open');
+            backdrop.classList.toggle('db-open');
+        }
+        toggleBtn?.addEventListener('click', toggleSidebar);
+        backdrop?.addEventListener('click', toggleSidebar);
+    </script>
+}
+else
+{
+    <main class="container mt-4">
+        @RenderBody()
+    </main>
+}
+
+<script src="~/twitter-bootstrap/js/bootstrap.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

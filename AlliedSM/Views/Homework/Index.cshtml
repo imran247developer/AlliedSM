@@ -1,0 +1,64 @@
+@model IEnumerable<AlliedSM.Models.Homework>
+@{
+    ViewData["Title"] = "Homework";
+    // FIX: the "Upload Homework" button visibility is now driven directly by
+    // role checks (Admin/Teacher only) instead of a ViewBag flag, so a Parent
+    // account can never see or reach it — Parents get a read-only list.
+    var canManage = User.IsInRole("Admin") || User.IsInRole("Teacher");
+}
+
+<h2>Homework Portal</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+@if (canManage)
+{
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-auto">
+            <select name="classId" class="form-select" asp-items="ViewBag.Classes" onchange="this.form.submit()">
+                <option value="">All Classes</option>
+            </select>
+        </div>
+        <div class="col-auto ms-auto">
+            <a asp-action="Create" class="btn btn-primary">+ Upload Homework</a>
+        </div>
+    </form>
+}
+else
+{
+    <p class="text-muted">Showing homework for your child's class (view only).</p>
+}
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Date</th><th>Class</th><th>Subject</th><th>Description</th><th>Due Date</th>
+            @if (canManage) { <th></th> }
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var h in Model)
+    {
+        <tr>
+            <td>@h.AssignedDate.ToString("dd-MMM-yyyy")</td>
+            <td>@h.SchoolClass?.ClassName</td>
+            <td>@h.Subject?.SubjectName</td>
+            <td>@h.Description</td>
+            <td>@(h.DueDate?.ToString("dd-MMM-yyyy") ?? "-")</td>
+            @if (canManage)
+            {
+                <td>
+                    <a asp-action="Edit" asp-route-id="@h.HomeworkId" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@h.HomeworkId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this homework entry?')">Delete</button>
+                    </form>
+                </td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="text-muted">No homework has been posted yet.</div>
+}

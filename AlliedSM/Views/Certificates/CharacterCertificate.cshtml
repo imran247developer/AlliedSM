@@ -1,0 +1,107 @@
+@model AlliedSM.Models.Student
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Character Certificate — @Model.StudentName</title>
+    <style>
+            body {
+                font-family: 'Georgia', serif;
+                background: #eee;
+                padding: 20px;
+            }
+
+            .toolbar {
+                text-align: center;
+                margin-bottom: 16px;
+                font-family: 'Segoe UI',sans-serif;
+            }
+
+            .cert {
+                max-width: 680px;
+                margin: auto;
+                background: #fff;
+                border: 6px double #c8a24b;
+                padding: 40px;
+                color: #231a16;
+            }
+
+                .cert h1 {
+                    text-align: center;
+                    color: #5a1723;
+                    font-size: 22px;
+                    letter-spacing: 1px;
+                    margin-bottom: 2px;
+                }
+
+                .cert .sub {
+                    text-align: center;
+                    color: #6b5d54;
+                    font-size: 12px;
+                    margin-bottom: 24px;
+                }
+
+                .cert .cert-no {
+                    text-align: right;
+                    font-size: 12px;
+                    color: #6b5d54;
+                }
+
+                .cert p {
+                    font-size: 14px;
+                    line-height: 2;
+                    margin: 0 0 10px 0;
+                }
+
+            .blank {
+                border-bottom: 1px solid #231a16;
+                padding: 0 4px;
+            }
+
+            .signatures {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 50px;
+                font-size: 13px;
+            }
+
+            @@media print {
+                .toolbar {
+                    display: none;
+                }
+
+                body {
+                    background: #fff;
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="toolbar"><button onclick="window.print()">🖨 Print</button></div>
+    <div class="cert">
+        <div class="cert-no">Certificate No: CC-@Model.StudentId.ToString("D4")-@DateTime.Now.Year</div>
+        <h1>Allied School — Sadiqabad Campus</h1>
+        <div class="sub">Character Certificate</div>
+
+        <p>
+            This is to certify that <span class="blank">@Model.StudentName</span>, son/daughter of <span class="blank">@Model.FatherName</span>,
+            Registration No. <span class="blank">@Model.RegistrationNo</span>, is/was a student of class <span class="blank">@Model.SchoolClass?.ClassName — @Model.Section?.SectionName</span>.
+        </p>
+
+        <p>
+            During his/her stay at our school, his/her conduct and character have been completely satisfactory.
+            To the best of our knowledge, he/she has not been found involved in any violation of discipline or rules.
+        </p>
+
+        <p>This certificate is being issued at his/her request.</p>
+
+        <div class="signatures">
+            <div>_______________<br />Class Teacher</div>
+            <div>_______________<br />Principal / Head of School</div>
+        </div>
+    </div>
+</body>
+</html>

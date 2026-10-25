@@ -1,0 +1,56 @@
+@model IEnumerable<AlliedSM.Models.SalarySlip>
+@{
+    ViewData["Title"] = "Payroll";
+    var monthNames = new[] { "", "January","February","March","April","May","June","July","August","September","October","November","December" };
+}
+
+<h2>Payroll — @monthNames[(int)ViewBag.Month] @ViewBag.Year</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="month" class="form-select">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" selected="@(i == (int)ViewBag.Month)">@monthNames[i]</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><input type="number" name="year" class="form-control" value="@ViewBag.Year" style="width:100px;" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">View</button></div>
+    <div class="col-auto ms-auto">
+        <a asp-controller="Staff" asp-action="Index" class="btn btn-outline-dark">Staff Profiles</a>
+        <a asp-action="Generate" class="btn btn-primary">Generate Salary Slips</a>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Staff</th><th>Base</th><th>Allowances</th><th>Fines</th><th>Deductions</th><th>Net Payable</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.Staff?.FullName</td>
+            <td>Rs @s.BaseSalary</td>
+            <td>Rs @s.Allowances</td>
+            <td>Rs @s.Fines</td>
+            <td>Rs @s.Deductions</td>
+            <td class="fw-bold">Rs @s.NetPayable</td>
+            <td>
+                @if (s.IsPaid) { <span class="badge bg-success">Paid</span> }
+                else { <span class="badge bg-warning text-dark">Pending</span> }
+            </td>
+            <td>
+                <a asp-action="Print" asp-route-id="@s.SalarySlipId" class="btn btn-sm btn-outline-secondary" target="_blank">Print</a>
+                @if (!s.IsPaid)
+                {
+                    <a asp-action="Edit" asp-route-id="@s.SalarySlipId" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <form asp-action="MarkPaid" asp-route-id="@s.SalarySlipId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Mark as paid? Yeh School Accounts mein expense add karega.')">Mark Paid</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

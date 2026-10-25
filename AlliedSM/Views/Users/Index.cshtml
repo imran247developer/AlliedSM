@@ -1,0 +1,41 @@
+@model List<(AlliedSM.Data.ApplicationUser User, string Role, bool Locked)>
+@{
+    ViewData["Title"] = "Login Accounts";
+}
+
+<h2>Login Accounts (RBAC)</h2>
+
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<a asp-action="Create" class="btn btn-primary mb-3">+ New Login</a>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model)
+    {
+        <tr>
+            <td>@row.User.FullName</td>
+            <td>@row.User.Email</td>
+            <td><span class="badge bg-secondary">@row.Role</span></td>
+            <td>
+                @if (row.Locked)
+                {
+                    <span class="badge bg-danger">Deactivated</span>
+                }
+                else
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@row.User.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@row.User.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

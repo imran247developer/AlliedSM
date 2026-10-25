@@ -1,0 +1,29 @@
+@model AlliedSM.Models.Notice
+@{
+    ViewData["Title"] = "Edit Notice";
+}
+<h2>Edit Notice</h2>
+<form asp-action="Edit" method="post" class="row g-3" style="max-width:500px;">
+    <input type="hidden" asp-for="NoticeId" />
+    <div class="col-12"><label class="form-label">Title</label><input asp-for="Title" class="form-control" /></div>
+    <div class="col-12"><label class="form-label">Message</label><textarea asp-for="Message" class="form-control" rows="4"></textarea></div>
+    <div class="col-6">
+        <label class="form-label">Audience</label>
+        <select asp-for="Audience" class="form-select">
+            <option value="Everyone">Everyone</option>
+            <option value="StaffOnly">Staff Only</option>
+            <option value="ParentsOnly">Parents Only</option>
+        </select>
+    </div>
+    <div class="col-6 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="IsUrgent" class="form-check-input" />
+            <label class="form-check-label">Mark Urgent 🚨</label>
+        </div>
+    </div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

@@ -1,0 +1,39 @@
+/* PATCH — add this near the bottom of your existing wwwroot/css/dashboard.css,
+   and DELETE the old ".db-content a { color: var(--db-blue); }" rule.
+
+   THE BUG: ".db-content a { color: var(--db-blue); }" was applying to every
+   <a> tag, including ones styled as Bootstrap buttons (asp-action links with
+   class="btn btn-outline-...").  Bootstrap normally swaps a button's text
+   color on hover, but our blanket rule kept forcing the text back to blue —
+   so on some buttons the hover background was also blue-ish, making the
+   text invisible. Scoping the rule to ":not(.btn)" fixes it everywhere at
+   once, for every button in every module. */
+
+.db-content a:not(.btn) { color: var(--db-blue); }
+
+/* Belt-and-braces: force every Bootstrap button variant to always keep
+   readable text, in every state (normal / hover / focus / active). */
+.btn { transition: background-color .15s ease, color .15s ease, border-color .15s ease; }
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active { color: #fff !important; }
+
+.btn-outline-primary { color: var(--db-blue) !important; }
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active { color: #fff !important; background: var(--db-blue) !important; }
+
+.btn-outline-secondary { color: var(--db-gray-700) !important; }
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus { color: #fff !important; background: var(--db-gray-700) !important; }
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-danger:hover,
+.btn-outline-danger:focus,
+.btn-outline-dark:hover,
+.btn-outline-dark:focus,
+.btn-outline-warning:hover,
+.btn-outline-warning:focus { color: #fff !important; }

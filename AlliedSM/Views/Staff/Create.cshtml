@@ -1,0 +1,23 @@
+@model AlliedSM.Models.Staff
+@{
+    ViewData["Title"] = "Add Staff";
+}
+<h2>Add Staff</h2>
+<form asp-action="Create" method="post" class="row g-3" style="max-width:500px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-12"><label class="form-label">Full Name</label><input asp-for="FullName" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">CNIC</label><input asp-for="Cnic" class="form-control" placeholder="3230X-XXXXXXX-X" /></div>
+    <div class="col-6">
+        <label class="form-label">Designation</label>
+        <select asp-for="Designation" class="form-select">
+            <option>Teacher</option><option>Accountant</option><option>Admin Staff</option>
+        </select>
+    </div>
+    <div class="col-6"><label class="form-label">Mobile</label><input asp-for="Mobile" class="form-control" /></div>
+    <div class="col-6"><label class="form-label">Base Salary</label><input asp-for="BaseSalary" class="form-control" /></div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

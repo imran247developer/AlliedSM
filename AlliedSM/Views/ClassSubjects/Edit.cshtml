@@ -1,0 +1,23 @@
+@model AlliedSM.Models.ClassSubject
+@{
+    ViewData["Title"] = "Edit Allocation";
+}
+<h2>Edit Allocation</h2>
+<form asp-action="Edit" method="post" class="row g-3" style="max-width:420px;">
+    <input type="hidden" asp-for="ClassSubjectId" />
+    <input type="hidden" asp-for="SchoolClassId" />
+    <div class="col-12">
+        <label class="form-label">Subject</label>
+        <select asp-for="SubjectId" class="form-select" asp-items="ViewBag.Subjects"></select>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Teacher</label>
+        <select asp-for="TeacherId" class="form-select" asp-items="ViewBag.Teachers">
+            <option value="">— not assigned —</option>
+        </select>
+    </div>
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

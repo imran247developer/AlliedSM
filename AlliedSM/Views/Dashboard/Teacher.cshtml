@@ -1,0 +1,36 @@
+@model AlliedSM.Models.TeacherDashboardViewModel
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+}
+
+<h2>Welcome, @Model.TeacherName</h2>
+<p class="text-muted">@DateTime.Today.ToString("dd MMMM yyyy")</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="card border-0 shadow-sm"><div class="card-body">
+        <div class="text-muted small">My Classes / Subjects</div>
+        <div class="fs-4 fw-bold" style="color:#5a1723;">@Model.MyClasses.Count</div>
+    </div></div></div>
+    <div class="col-md-4"><div class="card border-0 shadow-sm"><div class="card-body">
+        <div class="text-muted small">Today's Attendance</div>
+        <div class="fs-5 fw-bold">@(Model.AttendanceMarkedToday ? "Marked ✓" : "Pending")</div>
+    </div></div></div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4"><div class="card-body">
+    <h5>My Classes</h5>
+    @if (!Model.MyClasses.Any())
+    {
+        <div class="text-muted small">No Class alloted yet — Contact Admin for Subject Allocation.</div>
+    }
+    @foreach (var c in Model.MyClasses)
+    {
+        <div class="border-bottom py-1">@c</div>
+    }
+</div></div>
+
+<div class="card border-0 shadow-sm"><div class="card-body">
+    <h5>Quick Actions</h5>
+    <a asp-controller="Attendance" asp-action="Mark" class="btn btn-primary me-2">Mark Attendance</a>
+    <a asp-controller="Exams" asp-action="Index" class="btn btn-outline-dark me-2">Enter Marks</a>
+</div></div>

@@ -1,0 +1,25 @@
+@model List<AlliedSM.Models.FeeChallan>
+@{
+    ViewData["Title"] = "Defaulters List";
+}
+
+<h2>Defaulters List</h2>
+<p class="text-muted">Unpaid + over due date challans — 1-click warning notice can be sent.</p>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Voucher #</th><th>Student</th><th>Class</th><th>Total Due</th><th>Due Date</th><th>Days Overdue</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var c in Model)
+    {
+        <tr>
+            <td>@c.VoucherNo</td>
+            <td>@c.Student?.StudentName</td>
+            <td>@c.Student?.SchoolClass?.ClassName</td>
+            <td>Rs @c.TotalPayable</td>
+            <td>@c.DueDate.ToString("dd-MMM-yyyy")</td>
+            <td class="text-danger fw-bold">@((DateTime.Today - c.DueDate).Days) din</td>
+            <td><a asp-action="Print" asp-route-ids="@c.FeeChallanId" target="_blank" class="btn btn-sm btn-outline-danger">Warning Notice Print</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

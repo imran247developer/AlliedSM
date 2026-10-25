@@ -1,0 +1,56 @@
+@model List<AlliedSM.Models.Student>
+@{
+    Layout = null;
+    ViewData["Title"] = "Student ID Cards";
+}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Student ID Cards</title>
+<style>
+    body { font-family:'Segoe UI', sans-serif; background:#eee; padding:20px; }
+    .toolbar { text-align:center; margin-bottom:16px; }
+    .sheet { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
+    .card-id {
+        width:320px; height:200px; border-radius:14px; overflow:hidden; position:relative;
+        background: linear-gradient(135deg, #5a1723, #3a0f18); color:#fff; box-shadow:0 4px 14px rgba(0,0,0,.2);
+        page-break-inside: avoid; margin-bottom:14px;
+    }
+    .card-id .gold-strip { height:8px; background:linear-gradient(90deg,#c8a24b,#d9b96a,#c8a24b); }
+    .card-id .content { padding:14px; display:flex; gap:12px; }
+    .photo-box { width:64px; height:76px; background:rgba(255,255,255,.15); border:2px solid #c8a24b; border-radius:4px; flex-shrink:0; }
+    .info { font-size:12px; line-height:1.5; }
+    .info .name { font-size:15px; font-weight:700; color:#d9b96a; }
+    .qr { width:46px; height:46px; background:repeating-conic-gradient(#fff 0% 25%, transparent 0% 50%) 0/6px 6px; margin-top:6px; border-radius:3px; }
+    .footer-strip { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.25); font-size:10px; text-align:center; padding:3px; }
+    @@media print { .toolbar{display:none;} body{background:#fff;} }
+</style>
+</head>
+<body>
+<div class="toolbar"><button onclick="window.print()">🖨 Print All</button></div>
+<div class="sheet">
+@foreach (var s in Model)
+{
+    <div class="card-id">
+        <div class="gold-strip"></div>
+        <div class="content">
+            <div>
+                <div class="photo-box"></div>
+                <div class="qr"></div>
+            </div>
+            <div class="info">
+                <div class="name">@s.StudentName</div>
+                <div>Reg #: @s.RegistrationNo</div>
+                <div>Father: @s.FatherName</div>
+                <div>Class: @s.SchoolClass?.ClassName — @s.Section?.SectionName</div>
+                <div>DOB: @s.DateOfBirth.ToString("dd-MMM-yyyy")</div>
+                <div>Contact: @s.ParentMobile</div>
+            </div>
+        </div>
+        <div class="footer-strip">Allied School — Sadiqabad Campus</div>
+    </div>
+}
+</div>
+</body>
+</html>

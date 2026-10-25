@@ -1,0 +1,42 @@
+@model AlliedSM.Models.ExcelImportResultVm
+@{
+    ViewData["Title"] = "Import Result";
+}
+
+<h2 class="mb-3">Import Result</h2>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">
+        <b>Import failed - nothing after this error was saved.</b><br />@Model.Error
+    </div>
+}
+else
+{
+    <div class="alert alert-success"><b>@Model.Imported</b> students imported successfully.</div>
+}
+
+@if (Model.CreatedClasses.Count > 0)
+{
+    <p>New classes created: <b>@string.Join(", ", Model.CreatedClasses)</b></p>
+}
+@if (Model.CreatedSections > 0)
+{
+    <p>Sections created automatically (named "A"): <b>@Model.CreatedSections</b></p>
+}
+
+@if (Model.Skipped.Count > 0)
+{
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h6>Skipped (@Model.Skipped.Count)</h6>
+            <ul class="mb-0">
+                @foreach (var s in Model.Skipped.Take(100)) { <li>@s</li> }
+            </ul>
+        </div>
+    </div>
+}
+
+<a asp-controller="Students" asp-action="Index" class="btn btn-primary">View Students</a>
+<a asp-controller="Fee" asp-action="BulkGenerate" class="btn btn-outline-secondary">Generate Fee Challans</a>
+<a asp-action="Index" class="btn btn-outline-secondary">Import another file</a>

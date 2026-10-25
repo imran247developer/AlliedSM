@@ -1,0 +1,123 @@
+@model AlliedSM.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ur-PK">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Allied School Sadiqabad</title>
+    <link rel="stylesheet" href="~/twitter-bootstrap/css/bootstrap.css" />
+    <style>
+        :root { --l-navy:#131826; --l-blue:#3b6fed; }
+        * { box-sizing:border-box; }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Segoe UI', system-ui, sans-serif;
+                position: relative;
+                overflow: hidden;
+                background-image: linear-gradient(160deg, rgba(13, 17, 25, 0.55) 0%, rgba(19, 24, 38, 0.45) 55%, rgba(59, 111, 237, 0.35) 130%), url('/images/allied.jpeg');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }
+        #bubbleField { position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none; }
+        .l-bubble { position:absolute; border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(111,140,245,.35), rgba(111,140,245,.04)); animation: lFloat linear infinite; }
+        @@keyframes lFloat {
+            0%   { transform: translateY(0) translateX(0); opacity:.5; }
+            50%  { transform: translateY(-65vh) translateX(24px); opacity:.85; }
+            100% { transform: translateY(-130vh) translateX(-16px); opacity:0; }
+        }
+
+        .login-card {
+            position:relative; z-index:5;
+            background: rgba(255,255,255,.94);
+            backdrop-filter: blur(8px);
+            border-radius:16px; padding:36px 34px; width:380px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.45);
+            text-align:center;
+        }
+        .login-card .crest {
+            width:64px; height:64px; border-radius:50%; margin:0 auto 12px; overflow:hidden;
+            border:3px solid var(--l-blue); box-shadow:0 4px 14px rgba(59,111,237,.35);
+        }
+        .login-card .crest img { width:100%; height:100%; object-fit:cover; }
+        .login-card h3 { color:#131826; font-weight:700; margin-bottom:2px; }
+        .login-card .sub { color:#6b7280; font-size:12.5px; margin-bottom:22px; }
+        .login-card .form-label { text-align:left; display:block; font-size:12.5px; font-weight:600; color:#374151; }
+        .btn-brand { background:var(--l-blue); color:#fff !important; font-weight:600; }
+        .btn-brand:hover { background:#2559c7; color:#fff !important; }
+        .pwd-wrap { position:relative; }
+        .pwd-toggle {
+            position:absolute; right:10px; top:50%; transform:translateY(-50%);
+            background:none; border:none; font-size:13px; color:#6b7280; cursor:pointer; padding:4px;
+        }
+        .pwd-toggle:hover { color:var(--l-blue); }
+        .forgot-link { display:block; margin-top:14px; font-size:12.5px; color:var(--l-blue); text-decoration:none; }
+        .forgot-link:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+
+<div id="bubbleField"></div>
+
+<div class="login-card">
+    <div class="crest"><img src="~/images/allied.jpeg" alt="Allied School" /></div>
+    <h3>Allied School</h3>
+    <div class="sub">Sadiqabad Campus — Management System</div>
+
+    <div asp-validation-summary="All" class="text-danger small mb-2"></div>
+
+    <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+        <div class="mb-3 text-start">
+            <label class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" placeholder="admin@alliedschool.com" />
+        </div>
+        <div class="mb-2 text-start">
+            <label class="form-label">Password</label>
+            <div class="pwd-wrap">
+                <input asp-for="Password" class="form-control" type="password" id="pwdInput" />
+                <button type="button" class="pwd-toggle" id="pwdToggleBtn">👁</button>
+            </div>
+        </div>
+        <div class="mb-3 form-check text-start">
+            <input asp-for="RememberMe" class="form-check-input" />
+            <label class="form-check-label">Remember Me</label>
+        </div>
+        <button type="submit" class="btn btn-brand w-100">Login</button>
+        <a class="forgot-link" asp-action="ForgotPassword">Forget Password?</a>
+    </form>
+</div>
+
+<script>
+    const field = document.getElementById('bubbleField');
+    const count = window.innerWidth < 768 ? 8 : 16;
+    for (let i = 0; i < count; i++) {
+        const b = document.createElement('div');
+        b.className = 'l-bubble';
+        const size = 18 + Math.random() * 55;
+        b.style.width = size + 'px';
+        b.style.height = size + 'px';
+        b.style.left = Math.random() * 100 + 'vw';
+        b.style.bottom = -(size + 20) + 'px';
+        b.style.animationDuration = (13 + Math.random() * 14) + 's';
+        b.style.animationDelay = (Math.random() * 10) + 's';
+        field.appendChild(b);
+    }
+
+    document.getElementById('pwdToggleBtn').addEventListener('click', function () {
+        const input = document.getElementById('pwdInput');
+        const showing = input.type === 'text';
+        input.type = showing ? 'password' : 'text';
+        this.textContent = showing ? '👁' : '🙈';
+    });
+</script>
+</body>
+</html>

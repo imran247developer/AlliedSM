@@ -1,0 +1,51 @@
+@model IEnumerable<AlliedSM.Models.LeaveRequest>
+@{
+    ViewData["Title"] = "Leave Requests";
+}
+
+<h2>Leave Applications</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+@if (!User.IsInRole("Admin"))
+{
+    <a asp-action="Apply" class="btn btn-primary mb-3">+ Apply for Leave</a>
+}
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Staff</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th>@(User.IsInRole("Admin") ? Html.Raw("<th></th>") : Html.Raw(""))</tr></thead>
+    <tbody>
+    @foreach (var l in Model)
+    {
+        <tr>
+            <td>@l.Staff?.FullName</td>
+            <td>@l.FromDate.ToString("dd-MMM-yyyy")</td>
+            <td>@l.ToDate.ToString("dd-MMM-yyyy")</td>
+            <td>@l.DaysCount</td>
+            <td>@l.Reason</td>
+            <td>
+                @if (l.Status == AlliedSM.Models.LeaveStatus.Approved) { <span class="badge bg-success">Approved</span> }
+                else if (l.Status == AlliedSM.Models.LeaveStatus.Rejected) { <span class="badge bg-danger">Rejected</span> }
+                else { <span class="badge bg-warning text-dark">Pending</span> }
+            </td>
+            @if (User.IsInRole("Admin"))
+            {
+                <td>
+                    @if (l.Status == AlliedSM.Models.LeaveStatus.Pending)
+                    {
+                        <form asp-action="Approve" asp-route-id="@l.LeaveRequestId" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Approve</button>
+                        </form>
+                        <form asp-action="Reject" asp-route-id="@l.LeaveRequestId" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-muted small">@l.AdminRemarks</span>
+                    }
+                </td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,55 @@
+@model IEnumerable<AlliedSM.Models.Attendance>
+@{
+    ViewData["Title"] = "Attendance History";
+}
+
+<h2>Attendance History</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="classId" class="form-select" asp-items="ViewBag.Classes"><option value="">All Classes</option></select>
+    </div>
+    <div class="col-auto">
+        <select name="sectionId" class="form-select" asp-items="ViewBag.Sections"><option value="">All Sections</option></select>
+    </div>
+    <div class="col-auto">
+        <input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate" />
+    </div>
+    <div class="col-auto">
+        <input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+    </div>
+    <div class="col-auto ms-auto">
+        <a asp-action="Mark" class="btn btn-primary">Mark Today's Attendance</a>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Date</th><th>Reg. No</th><th>Student</th><th>Status</th><th>Remarks</th><th>SMS</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var a in Model)
+    {
+        <tr>
+            <td>@a.AttendanceDate.ToString("dd-MMM-yyyy")</td>
+            <td>@a.Student?.RegistrationNo</td>
+            <td>@a.Student?.StudentName</td>
+            <td>
+                <span class="badge bg-@(a.Status == AlliedSM.Models.AttendanceStatus.Present ? "success" : a.Status == AlliedSM.Models.AttendanceStatus.Absent ? "danger" : "warning")">
+                    @a.Status
+                </span>
+            </td>
+            <td>@a.Remarks</td>
+            <td>@(a.SmsSent ? "Sent" : "-")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@a.AttendanceId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@a.AttendanceId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this record?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

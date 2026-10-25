@@ -1,0 +1,46 @@
+@model AlliedSM.Models.SchoolSetting
+@{
+    ViewData["Title"] = "School Settings";
+}
+
+<h2>School Settings</h2>
+<p class="text-muted">"Update the account number, WhatsApp, and Principal's mobile from here — no need to edit appsettings.json.".
+</p>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form asp-action="Index" method="post" class="row g-3" style="max-width:480px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-12"><h5 class="mt-2">Fee Challan — Payment Details</h5></div>
+    <div class="col-12">
+        <label class="form-label">Bank Name</label>
+        <input asp-for="BankName" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">School Account Number</label>
+        <input asp-for="AccountNumber" class="form-control" placeholder="PK00 XXXX 0000 1234 5678 9012" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">JazzCash / EasyPaisa Number</label>
+        <input asp-for="JazzCashNumber" class="form-control" placeholder="0300-1234567" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Accounts Office WhatsApp</label>
+        <input asp-for="AccountsWhatsApp" class="form-control" placeholder="923001234567 (bina + ya 0 ke)" />
+        <div class="form-text">Yehi number "Pay Now" button par challan ke sath message bhejta hai.</div>
+    </div>
+
+    <div class="col-12"><h5 class="mt-3">Day-End Report</h5></div>
+    <div class="col-12">
+        <label class="form-label">Principal Mobile Number</label>
+        <input asp-for="PrincipalMobile" class="form-control" placeholder="03001234567" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Report Time (24-hour)</label>
+        <input asp-for="DayEndReportTime" class="form-control" placeholder="15:00" style="max-width:140px;" />
+    </div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+    </div>
+</form>

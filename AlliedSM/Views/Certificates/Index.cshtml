@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "ID Cards & Certificates";
+}
+
+<h2>ID Card & Certificate Generator</h2>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="classId" class="form-select" asp-items="ViewBag.Classes" onchange="this.form.submit()">
+            <option value="">Select Class</option>
+        </select>
+    </div>
+    @if (ViewBag.Students != null)
+    {
+        <div class="col-auto">
+            <a asp-action="BulkIdCards" asp-route-classId="@Context.Request.Query["classId"]" class="btn btn-outline-dark" target="_blank">Bulk ID Cards — Poori Class</a>
+        </div>
+    }
+</form>
+
+@if (ViewBag.Students != null)
+{
+    <table class="table table-striped align-middle" style="max-width:700px;">
+        <thead><tr><th>Reg. No</th><th>Name</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var s in (List<AlliedSM.Models.Student>)ViewBag.Students)
+        {
+            <tr>
+                <td>@s.RegistrationNo</td>
+                <td>@s.StudentName</td>
+                <td>
+                    <a asp-action="IdCard" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-secondary" target="_blank">ID Card</a>
+                    <a asp-action="LeavingCertificate" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-secondary" target="_blank">Leaving Cert.</a>
+                    <a asp-action="CharacterCertificate" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-secondary" target="_blank">Character Cert.</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

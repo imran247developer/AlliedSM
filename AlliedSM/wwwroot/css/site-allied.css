@@ -1,0 +1,27 @@
+/* Allied School Sadiqabad — site-wide brand accents.
+   Link this AFTER bootstrap.min.css in _Layout.cshtml:
+   <link rel="stylesheet" href="~/css/site-allied.css" />
+*/
+:root {
+    --allied-maroon: #5a1723;
+    --allied-maroon-dark: #3a0f18;
+    --allied-gold: #c8a24b;
+}
+
+.navbar { background-color: var(--allied-maroon) !important; }
+.navbar .nav-link, .navbar-brand { color: #f3e8ce !important; }
+.navbar .nav-link:hover { color: var(--allied-gold) !important; }
+
+.btn-primary {
+    background-color: var(--allied-maroon);
+    border-color: var(--allied-maroon);
+}
+.btn-primary:hover {
+    background-color: var(--allied-maroon-dark);
+    border-color: var(--allied-maroon-dark);
+}
+
+h1, h2, h3, h4, h5 { color: var(--allied-maroon-dark); }
+
+.card { border-radius: 10px; }
+.table thead th { color: #6b5d54; font-size: 12px; text-transform: uppercase; letter-spacing: .02em; }

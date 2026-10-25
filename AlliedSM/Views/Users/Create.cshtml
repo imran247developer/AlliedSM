@@ -1,0 +1,50 @@
+@model AlliedSM.Models.CreateUserViewModel
+@{
+    ViewData["Title"] = "New Login";
+}
+
+<h2>New Login Account</h2>
+
+<form asp-action="Create" method="post" class="row g-3" style="max-width:500px;">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="col-12">
+        <label class="form-label">Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Email (login id)</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Mobile Number</label>
+        <input asp-for="PhoneNumber" class="form-control" placeholder="03006754287" />
+        <div class="form-text">Will be used Password recovery and SMS</div>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Password</label>
+        <input asp-for="Password" class="form-control" type="password" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Role</label>
+        <select asp-for="Role" class="form-select">
+            @foreach (var r in (List<string>)ViewBag.Roles)
+            {
+                <option value="@r">@r</option>
+            }
+        </select>
+    </div>
+    <div class="col-6">
+        <label class="form-label">Link to Student ID (Parent role only)</label>
+        <input asp-for="LinkedStudentId" class="form-control" />
+    </div>
+    <div class="col-6">
+        <label class="form-label">Link to Staff ID (Teacher/Accountant role only)</label>
+        <input asp-for="LinkedStaffId" class="form-control" />
+    </div>
+
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">Create Login</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

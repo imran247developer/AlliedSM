@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Export Reports";
+}
+
+<h2>Export Reports (Excel)</h2>
+<p class="text-muted">Every report is downloaded directly as an .xlsx file — you can sort/filter/print it further in Excel..
+</p>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5>Students</h5>
+            <p class="small text-muted">All active students, class-wise</p>
+            <a asp-action="ExportStudents" class="btn btn-primary btn-sm">Download Excel</a>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5>Attendance</h5>
+            <p class="small text-muted">Last 7 days record </p>
+            <a asp-action="ExportAttendance" class="btn btn-primary btn-sm">Download Excel</a>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5>Fee Challans</h5>
+            <p class="small text-muted">Last months Challan, with status</p>
+            <a asp-action="ExportFee" class="btn btn-primary btn-sm">Download Excel</a>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5>Payroll</h5>
+            <p class="small text-muted">This months Salary slips</p>
+            <a asp-action="ExportPayroll" class="btn btn-primary btn-sm">Download Excel</a>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body">
+            <h5>School Accounts</h5>
+            <p class="small text-muted">Income + Expense, Both Sheets</p>
+            <a asp-action="ExportAccounts" class="btn btn-primary btn-sm">Download Excel</a>
+        </div></div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-4 small">
+    Tip: URL parameters can be added range control e.g. <br />
+    <code>/Reports/ExportAttendance?fromDate=2026-09-01&amp;toDate=2026-09-30&amp;classId=8</code>
+</div>

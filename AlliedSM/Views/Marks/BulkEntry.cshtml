@@ -1,0 +1,44 @@
+@model AlliedSM.Models.MarksEntryViewModel
+@{
+    ViewData["Title"] = "Bulk Marks Entry";
+}
+
+<h2>Bulk Marks Entry</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<div class="row g-3 mb-3">
+    <div class="col-auto"><strong>Exam:</strong> @Model.ExamName</div>
+    <div class="col-auto"><strong>Class:</strong> @Model.ClassName</div>
+    <div class="col-auto"><strong>Subject:</strong> @Model.SubjectName</div>
+    <div class="col-auto"><strong>Total Marks:</strong> @Model.TotalMarks <span class="text-muted">(Exams screen se set hai, yahan dobara nahi poocha jayega)</span></div>
+</div>
+
+<form asp-action="BulkEntry" method="post">
+    <input type="hidden" asp-for="ExamId" />
+    <input type="hidden" asp-for="ExamName" />
+    <input type="hidden" asp-for="ClassName" />
+    <input type="hidden" asp-for="SubjectName" />
+    <input type="hidden" asp-for="TotalMarks" />
+
+    <table class="table table-striped align-middle">
+        <thead><tr><th>Reg. No</th><th>Student Name</th><th style="width:140px;">Obtained Marks</th></tr></thead>
+        <tbody>
+        @for (int i = 0; i < Model.Rows.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Model.Rows[i].RegistrationNo
+                    <input type="hidden" asp-for="Rows[i].StudentId" />
+                    <input type="hidden" asp-for="Rows[i].RegistrationNo" />
+                    <input type="hidden" asp-for="Rows[i].StudentName" />
+                </td>
+                <td>@Model.Rows[i].StudentName</td>
+                <td><input asp-for="Rows[i].ObtainedMarks" class="form-control form-control-sm" max="@Model.TotalMarks" min="0" /></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Save Marks</button>
+    <a asp-controller="Exams" asp-action="Index" class="btn btn-outline-secondary">Back to Exams</a>
+</form>

@@ -1,0 +1,38 @@
+@model IEnumerable<AlliedSM.Models.Notice>
+@{
+    ViewData["Title"] = "Notice Board";
+}
+
+<h2>Digital Notice Board</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">+ Post Notice</a>
+}
+
+@foreach (var n in Model)
+{
+    <div class="card border-0 shadow-sm mb-3 @(n.IsUrgent ? "border-start border-4 border-danger" : "")">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <h5 class="mb-1">@(n.IsUrgent ? "🚨 " : "")@n.Title</h5>
+                <small class="text-muted">@n.PostedDate.ToString("dd-MMM-yyyy")</small>
+            </div>
+            <p class="mb-1">@n.Message</p>
+            <span class="badge bg-secondary">@n.Audience</span>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@n.NoticeId" class="btn btn-sm btn-outline-primary ms-2">Edit</a>
+                <form asp-action="Delete" asp-route-id="@n.NoticeId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this notice?')">Delete</button>
+                </form>
+            }
+        </div>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="text-muted">Abhi koi notice nahi.</div>
+}

@@ -1,0 +1,58 @@
+@model IEnumerable<AlliedSM.Models.Section>
+@{
+    ViewData["Title"] = "Sections";
+}
+
+<h2>Sections — @ViewBag.ClassName</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<a asp-controller="Classes" asp-action="Index" class="btn btn-outline-secondary mb-3">← Back to Classes</a>
+
+<table class="table table-striped align-middle" style="max-width:500px;">
+    <thead>
+        <tr>
+            <th>Section</th>
+            <th>Students</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>
+                    <input type="text" form="edit-form-@s.SectionId" name="sectionName" value="@s.SectionName" class="form-control form-control-sm" style="width:80px;" />
+                </td>
+                <td>@(s.Students?.Count ?? 0)</td>
+                <td>
+                    <form id="edit-form-@s.SectionId" asp-action="Edit" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@s.SectionId" />
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                    </form>
+                    <form asp-action="Delete" asp-route-id="@s.SectionId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this section?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h5>Add New Section</h5>
+<form asp-action="Create" method="post" class="row g-2" style="max-width:400px;">
+    <input type="hidden" name="schoolClassId" value="@ViewBag.SchoolClassId" />
+    <div class="col-auto">
+        <input type="text" name="sectionName" class="form-control" placeholder="e.g. C" required />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Add Section</button>
+    </div>
+</form>

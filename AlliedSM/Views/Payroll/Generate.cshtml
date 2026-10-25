@@ -1,0 +1,28 @@
+@model AlliedSM.Models.GenerateSalaryViewModel
+@{
+    ViewData["Title"] = "Generate Salary Slips";
+    var monthNames = new[] { "", "January","February","March","April","May","June","July","August","September","October","November","December" };
+}
+
+<h2>Generate Salary Slips</h2>
+<p class="text-muted"> Every active staff member will get their salary slip for this month (base salary already filled in). You can edit the allowances, fines, and deductions later</p>
+
+<form asp-action="Generate" method="post" class="row g-3" style="max-width:400px;">
+    <div class="col-12">
+        <label class="form-label">Month</label>
+        <select asp-for="Month" class="form-select">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i">@monthNames[i]</option>
+            }
+        </select>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Year</label>
+        <input asp-for="Year" class="form-control" />
+    </div>
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Generate All Slips</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

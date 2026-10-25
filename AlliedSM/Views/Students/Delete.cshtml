@@ -1,0 +1,23 @@
+@model AlliedSM.Models.Student
+
+@{
+    ViewData["Title"] = "Delete Student";
+}
+
+<h2>Delete Student</h2>
+<div class="alert alert-warning">
+    Kya aap waqai <strong>@Model.StudentName</strong> (@Model.RegistrationNo) want to remove record?
+    Attendance, fee and marks history will be saved.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Registration No</dt><dd class="col-sm-9">@Model.RegistrationNo</dd>
+    <dt class="col-sm-3">Father Name</dt><dd class="col-sm-9">@Model.FatherName</dd>
+    <dt class="col-sm-3">Class</dt><dd class="col-sm-9">@Model.SchoolClass?.ClassName — @Model.Section?.SectionName</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="StudentId" />
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>

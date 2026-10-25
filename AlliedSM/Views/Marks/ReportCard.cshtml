@@ -1,0 +1,53 @@
+@model List<AlliedSM.Models.Mark>
+@{
+    Layout = null;
+    var student = (AlliedSM.Models.Student)ViewBag.Student;
+    var examName = (string)ViewBag.ExamName;
+    var totalObtained = Model.Sum(m => m.ObtainedMarks);
+    var totalMax = Model.Sum(m => m.Exam?.TotalMarks ?? 0);
+    var overallPct = totalMax > 0 ? (totalObtained / totalMax * 100) : 0;
+}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Report Card — @student.StudentName</title>
+<style>
+    body { font-family:'Segoe UI', sans-serif; color:#231a16; background:#eee; padding:20px; }
+    .card-sheet { max-width:480px; margin:auto; background:#fff; border:3px solid #c8a24b; border-radius:8px; padding:24px; }
+    .card-sheet h2 { color:#5a1723; text-align:center; margin:0; }
+    .sub { text-align:center; color:#6b5d54; font-size:12px; margin-bottom:14px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { border-bottom:1px solid #e7ddcb; padding:6px 8px; text-align:left; }
+    .total-row { font-weight:700; color:#5a1723; }
+    .signatures { display:flex; justify-content:space-between; margin-top:40px; font-size:12px; }
+    .toolbar { text-align:center; margin-bottom:14px; }
+    @@media print { .toolbar{display:none;} body{background:#fff;} }
+</style>
+</head>
+<body>
+<div class="toolbar"><button onclick="window.print()">🖨 Print</button></div>
+<div class="card-sheet">
+    <h2>Allied School — Sadiqabad</h2>
+    <div class="sub">Progress Report Card — @examName</div>
+    <p><strong>Name:</strong> @student.StudentName &nbsp; | &nbsp; <strong>Reg #:</strong> @student.RegistrationNo</p>
+    <p><strong>Class:</strong> @student.SchoolClass?.ClassName — @student.Section?.SectionName</p>
+
+    <table>
+        <thead><tr><th>Subject</th><th>Total</th><th>Obtained</th><th>Grade</th></tr></thead>
+        <tbody>
+        @foreach (var m in Model)
+        {
+            <tr><td>@m.Exam?.Subject?.SubjectName</td><td>@m.Exam?.TotalMarks</td><td>@m.ObtainedMarks</td><td>@m.Grade</td></tr>
+        }
+        <tr class="total-row"><td>Overall</td><td>@totalMax</td><td>@totalObtained</td><td>@overallPct.ToString("0.0")%</td></tr>
+        </tbody>
+    </table>
+
+    <div class="signatures">
+        <div>_______________<br />Class Teacher</div>
+        <div>_______________<br />Principal</div>
+    </div>
+</div>
+</body>
+</html>

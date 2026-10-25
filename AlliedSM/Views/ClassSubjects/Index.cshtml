@@ -1,0 +1,38 @@
+@model IEnumerable<AlliedSM.Models.ClassSubject>
+@{
+    ViewData["Title"] = "Subject Allocation";
+}
+
+<h2>Class-wise Subject Allocation</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="classId" class="form-select" asp-items="ViewBag.Classes" onchange="this.form.submit()">
+            <option value="">All Classes</option>
+        </select>
+    </div>
+    <div class="col-auto ms-auto">
+        <a asp-action="Create" class="btn btn-primary">+ Allot Subject</a>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Class</th><th>Subject</th><th>Teacher</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var cs in Model)
+    {
+        <tr>
+            <td>@cs.SchoolClass?.ClassName</td>
+            <td>@cs.Subject?.SubjectName</td>
+            <td>@(cs.Teacher?.FullName ?? "— not assigned —")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@cs.ClassSubjectId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@cs.ClassSubjectId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this allocation?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

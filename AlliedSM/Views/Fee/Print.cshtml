@@ -1,0 +1,263 @@
+@model List<AlliedSM.Models.FeeChallan>
+@using AlliedSM.Models
+@{
+    Layout = null;   // this page prints on its own, no sidebar/topbar
+
+    // ---- school info (edit these lines if your details change) ----
+    string schoolName   = "Allied School";
+    string campusName   = "(Sadiq Abad campus)";
+    string address1     = "1st link road Meharbad";
+    string address2     = "Opposite Dr Haras";
+    string phone        = "0685706060, 0329-2510829";
+    string accountTitle = "Allied School System Sadiqabad";
+    string accountNo    = "04467902266403";
+    string logoPath     = "~/images/allied-logo.png"; // put your school logo file here
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Fee Challan Print</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+            background: #ccc;
+            margin: 0;
+            padding: 20px;
+        }
+        .toolbar {
+            max-width: 1050px;
+            margin: 0 auto 14px auto;
+            text-align: right;
+        }
+        .toolbar button {
+            padding: 8px 20px;
+            font-size: 14px;
+            background: #1b4ed8;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .sheet {
+            max-width: 1100px;
+            margin: 0 auto 28px auto;
+            background: #fff;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            border: 1.5px solid #000;
+            page-break-after: always;
+        }
+        .sheet:last-child { page-break-after: auto; }
+
+        /* Each copy gets generous, EVEN padding on all four sides so nothing
+           touches the dashed divider or the outer border — this is the main
+           "margins/spacing" fix. */
+        .copy {
+            padding: 16px 18px;
+            border-right: 2px dashed #777;
+            font-size: 11.5px;
+            line-height: 1.45;
+        }
+        .copy:last-child { border-right: none; }
+
+        /* Consistent vertical rhythm between every block inside a copy,
+           instead of each element setting its own one-off margin. */
+        .copy > * + * { margin-top: 10px; }
+
+        .head { display: flex; align-items: center; gap: 10px; }
+        .head img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
+        .head .names { flex: 1; text-align: center; }
+        .head .names h1 { margin: 0; font-size: 16px; letter-spacing: 0.2px; }
+        .head .names h2 { margin: 2px 0 0 0; font-size: 12px; font-weight: normal; }
+        .head .names small { display: block; margin-top: 2px; color: #0a7d2e; font-style: italic; font-size: 10px; }
+
+        .addr { font-size: 10.5px; }
+        .addr div { margin-top: 2px; }
+
+        .copy-label {
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 4px 0;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        /* table-layout: fixed guarantees the table NEVER grows past 100% of its
+           container, however long a label gets — that's what was pushing the
+           Student Copy table out past the page edge. Columns get fixed
+           percentages instead, sized so labels fit on one line without needing
+           white-space:nowrap (which has no width limit of its own). */
+        table.acc, table.info, table.fees {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        table.acc td, table.info td, table.fees td, table.fees th {
+            border: 1px solid #000;
+            padding: 5px 8px;
+            font-size: 10.5px;
+            line-height: 1.3;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        table.acc td:first-child { font-weight: bold; width: 32%; }
+        table.info td.label { font-weight: bold; width: 22%; }
+        table.info td:not(.label) { width: 28%; }
+        table.fees td:nth-child(1), table.fees td:nth-child(3), table.fees th:nth-child(1), table.fees th:nth-child(3) {
+            font-weight: bold;
+            width: 27%;
+        }
+        table.fees td:nth-child(2), table.fees td:nth-child(4), table.fees th:nth-child(2), table.fees th:nth-child(4) {
+            width: 23%;
+        }
+        table.fees td, table.fees th { text-align: left; }
+        table.fees tr.total-row td { background: #eef2fb; font-size: 11.5px; padding: 6px 8px; }
+        table.fees tr.total-row td:first-child { font-weight: bold; }
+
+        .section-title {
+            color: #1b6fd4;
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .terms { font-size: 10px; }
+        .terms b { color: #1b6fd4; }
+        .terms ol { margin: 4px 0 0 16px; padding: 0; }
+        .terms li { margin-bottom: 2px; }
+
+        .expiry {
+            font-weight: bold;
+            font-size: 11px;
+            padding-top: 8px;
+            border-top: 1px dashed #999;
+        }
+
+        @@media print {
+            body { background: #fff; padding: 0; }
+            .toolbar { display: none; }
+            /* Fixed mm width that matches the printable area of an A4 landscape
+               page with 8mm side margins (297mm - 16mm = 281mm) — this, plus the
+               table-layout:fixed columns above, is what keeps the sheet from
+               spilling past the page edge. */
+            .sheet { border: 1px solid #000; width: 281mm; max-width: 281mm; margin: 0 auto; }
+            .copy { border-right: 2px dashed #777; }
+            @@page { size: A4 landscape; margin: 8mm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <button onclick="window.print()">Print Challan@(Model.Count > 1 ? "s" : "")</button>
+    </div>
+
+    @foreach (var challan in Model)
+    {
+        // Transport Fee is dropped from the challan print (Admission Fee replaced it
+        // as the one-time charge — see the Student model's AdmissionFee comment).
+        decimal feeTotal    = challan.TuitionFee + challan.ExamFee + challan.LabFee + challan.AdmissionFee;
+        decimal actualTotal = feeTotal + challan.ArrearsAmount + challan.LateFeeFine; // what's owed today
+        const decimal afterDueFine = 200m; // flat fine if paid after the due date
+        decimal afterDueDisplay = actualTotal + afterDueFine;
+        decimal paidAmount = challan.Status == ChallanStatus.Paid ? actualTotal : 0;
+        decimal dueAmount  = actualTotal - paidAmount;
+
+        <div class="sheet">
+            @foreach (var copyLabel in new[] { "Admin Copy", "School Copy", "Student Copy" })
+            {
+                <div class="copy">
+                    <div class="head">
+                        <img src="@Url.Content(logoPath)" onerror="this.style.display='none'" />
+                        <div class="names">
+                            <h1>@schoolName</h1>
+                            <h2>@campusName</h2>
+                            <small>Growing Together</small>
+                        </div>
+                    </div>
+
+                    <div class="addr">
+                        <div><b>Address:</b> @address1, @address2</div>
+                        <div><b>Phone:</b> @phone</div>
+                    </div>
+
+                    <div class="copy-label">@copyLabel</div>
+
+                    <table class="acc">
+                        <tr><td>Account Title</td><td>@accountTitle</td></tr>
+                        <tr><td>Account #</td><td>@accountNo</td></tr>
+                    </table>
+
+                    <div class="section-title">Student Information</div>
+                    <table class="info">
+                        <tr>
+                            <td class="label">Invoice #:</td><td>@challan.VoucherNo</td>
+                            <td class="label">Generated Month:</td><td>@challan.IssueDate.ToString("MMM -yyyy")</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Student ID:</td><td>@challan.Student?.RegistrationNo</td>
+                            <td class="label">Class:</td><td>@challan.Student?.SchoolClass?.ClassName</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Student</td><td colspan="3">@challan.Student?.StudentName</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Father Name</td><td colspan="3">@challan.Student?.FatherName</td>
+                        </tr>
+                    </table>
+
+                    <table class="fees">
+                        <tr>
+                            <th>Fee Type</th><th>Amount</th><th>Fee Type</th><th>Amount</th>
+                        </tr>
+                        @if (challan.AdmissionFee > 0)
+                        {
+                            <tr>
+                                <td colspan="3">Admission Fee (one-time, admission)</td>
+                                <td>@challan.AdmissionFee.ToString("N0")</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>Tuition Fee</td><td>@challan.TuitionFee.ToString("N0")</td>
+                            <td>Exam Fee</td><td>@challan.ExamFee.ToString("N0")</td>
+                        </tr>
+                        <tr>
+                            <td>Lab Fee</td><td>@challan.LabFee.ToString("N0")</td>
+                            <td>Arrears</td><td>@challan.ArrearsAmount.ToString("N0")</td>
+                        </tr>
+                        <tr>
+                            <td>Late Fee Fine</td><td>@challan.LateFeeFine.ToString("N0")</td>
+                            <td>Paid Amount</td><td>@paidAmount.ToString("N0")</td>
+                        </tr>
+                        <tr>
+                            <td>Due Amount</td><td>@dueAmount.ToString("N0")</td>
+                            <td>After Due Date</td><td>@afterDueDisplay.ToString("N0")</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3"><b>Total Payable Amount</b></td>
+                            <td><b>Rs @actualTotal.ToString("N0")</b></td>
+                        </tr>
+                    </table>
+
+                    <div class="terms">
+                        <b>Payment Terms:</b>
+                        <ol>
+                            <li>After due date, a flat Rs. 200/- fine will be charged.</li>
+                            <li>After 15th of every month, Rs. 500/- fine will be charged.</li>
+                        </ol>
+                    </div>
+
+                    <div class="expiry">Expiry Date: @challan.DueDate.ToString("MMM dd, yyyy")</div>
+                </div>
+            }
+        </div>
+    }
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+@model AlliedSM.Models.SalarySlip
+@{
+    ViewData["Title"] = "Edit Salary Slip";
+}
+<h2>Edit Salary Slip — @Model.Staff?.FullName</h2>
+
+<form asp-action="Edit" method="post" class="row g-3" style="max-width:420px;">
+    <input type="hidden" name="id" value="@Model.SalarySlipId" />
+    <div class="col-12"><label class="form-label">Base Salary</label><input class="form-control" value="Rs @Model.BaseSalary" disabled /></div>
+    <div class="col-12"><label class="form-label">Allowances</label><input name="allowances" class="form-control" value="@Model.Allowances" /></div>
+    <div class="col-12"><label class="form-label">Fines</label><input name="fines" class="form-control" value="@Model.Fines" /></div>
+    <div class="col-12"><label class="form-label">Deductions</label><input name="deductions" class="form-control" value="@Model.Deductions" /></div>
+
+    <div class="col-12 mt-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

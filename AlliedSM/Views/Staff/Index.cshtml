@@ -1,0 +1,46 @@
+@model IEnumerable<AlliedSM.Models.Staff>
+@{
+    ViewData["Title"] = "Staff";
+}
+
+<h2>Staff</h2>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="designation" class="form-select">
+            <option value="">All Designations</option>
+            <option>Teacher</option><option>Accountant</option><option>Admin Staff</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="text" name="search" class="form-control" placeholder="Search name or CNIC" />
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Filter</button></div>
+    <div class="col-auto ms-auto">
+        <a asp-controller="Payroll" asp-action="Index" class="btn btn-outline-dark">Payroll</a>
+        <a asp-action="Create" class="btn btn-primary">+ Add Staff</a>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>Name</th><th>Designation</th><th>CNIC</th><th>Mobile</th><th>Base Salary</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.FullName</td>
+            <td>@s.Designation</td>
+            <td>@s.Cnic</td>
+            <td>@s.Mobile</td>
+            <td>Rs @s.BaseSalary</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@s.StaffId" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@s.StaffId" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this staff member?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

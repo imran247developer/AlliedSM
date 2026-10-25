@@ -1,0 +1,60 @@
+@model AlliedSM.Models.Student
+
+@{
+    ViewData["Title"] = "Edit Student";
+}
+
+<h2>Edit Student — @Model.RegistrationNo</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="StudentId" />
+    <input type="hidden" asp-for="RegistrationNo" />
+    <input type="hidden" asp-for="AdmissionDate" />
+    <input type="hidden" asp-for="IsActive" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Student Name</label>
+            <input asp-for="StudentName" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Father Name</label>
+            <input asp-for="FatherName" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Parent's Mobile Number</label>
+            <input asp-for="ParentMobile" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Date of Birth</label>
+            <input asp-for="DateOfBirth" class="form-control" type="date" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Class</label>
+            <select asp-for="SchoolClassId" class="form-select" asp-items="ViewBag.SchoolClassId"></select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Section</label>
+            <select asp-for="SectionId" class="form-select" asp-items="ViewBag.SectionId"></select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Gender</label>
+            <select asp-for="Gender" class="form-select">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+
+        <div class="col-12"><hr /><h5>Fee Structure</h5></div>
+        <div class="col-md-3"><label class="form-label">Tuition Fee</label><input asp-for="TuitionFee" class="form-control" /></div>
+        <div class="col-md-3"><label class="form-label">Exam Fee</label><input asp-for="ExamFee" class="form-control" /></div>
+        <div class="col-md-3"><label class="form-label">Lab Fee</label><input asp-for="LabFee" class="form-control" /></div>
+        <div class="col-md-3"><label class="form-label">Admission Fee</label><input asp-for="AdmissionFee" class="form-control" /></div>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

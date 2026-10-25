@@ -1,0 +1,35 @@
+@model AlliedSM.Models.Student
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<h2>@Model.StudentName <small class="text-muted">(@Model.RegistrationNo)</small></h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Father Name</dt><dd class="col-sm-9">@Model.FatherName</dd>
+    <dt class="col-sm-3">Class / Section</dt><dd class="col-sm-9">@Model.SchoolClass?.ClassName — @Model.Section?.SectionName</dd>
+    <dt class="col-sm-3">Parent Mobile</dt><dd class="col-sm-9">@Model.ParentMobile</dd>
+    <dt class="col-sm-3">Date of Birth</dt><dd class="col-sm-9">@Model.DateOfBirth.ToShortDateString()</dd>
+    <dt class="col-sm-3">Monthly Fee Total</dt><dd class="col-sm-9">Rs @Model.MonthlyFeeTotal</dd>
+</dl>
+
+<h4>Fee Challan History</h4>
+<table class="table table-sm">
+    <thead><tr><th>Voucher #</th><th>Issue Date</th><th>Due Date</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody>
+    @foreach (var c in Model.FeeChallans ?? new List<AlliedSM.Models.FeeChallan>())
+    {
+        <tr>
+            <td>@c.VoucherNo</td>
+            <td>@c.IssueDate.ToShortDateString()</td>
+            <td>@c.DueDate.ToShortDateString()</td>
+            <td>Rs @c.TotalPayable</td>
+            <td>@c.Status</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.StudentId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>

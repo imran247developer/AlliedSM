@@ -1,0 +1,66 @@
+@model AlliedSM.Models.ExcelImportPreviewVm
+@{
+    ViewData["Title"] = "Import Preview";
+}
+
+<h2 class="mb-1">Import Preview</h2>
+<p class="text-muted">@Model.Rows.Count students found in the file. Check the class mapping, then click Import.</p>
+
+<form asp-action="Confirm" method="post">
+    <input type="hidden" name="rowsJson" value="@Model.RowsJson" />
+
+    <div class="card shadow-sm mb-4" style="max-width:760px;">
+        <div class="card-body">
+            <h5 class="card-title">Step 2 - Match Excel classes to your classes</h5>
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr><th>Class in Excel</th><th>Students</th><th>Save into</th></tr>
+                </thead>
+                <tbody>
+                @for (int i = 0; i < Model.Maps.Count; i++)
+                {
+                    var m = Model.Maps[i];
+                    <tr>
+                        <td>
+                            <b>@m.ExcelClass</b>
+                            <input type="hidden" name="maps[@i].ExcelClass" value="@m.ExcelClass" />
+                            <input type="hidden" name="maps[@i].Count" value="@m.Count" />
+                        </td>
+                        <td>@m.Count</td>
+                        <td>
+                            <select name="maps[@i].SchoolClassId" class="form-select form-select-sm">
+                                <option value="" selected="@(m.SchoolClassId == null)">Create new class "@m.ExcelClass"</option>
+                                @foreach (var c in Model.Classes)
+                                {
+                                    <option value="@c.Value" selected="@(m.SchoolClassId?.ToString() == c.Value)">@c.Text</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">First 10 rows</h5>
+            <table class="table table-sm table-striped mb-0">
+                <thead><tr><th>#</th><th>Student Name</th><th>Father Name</th><th>ST.ID</th><th>Class</th><th>Monthly Fee</th></tr></thead>
+                <tbody>
+                @for (int i = 0; i < Math.Min(10, Model.Rows.Count); i++)
+                {
+                    var r = Model.Rows[i];
+                    <tr>
+                        <td>@(i + 1)</td><td>@r.Name</td><td>@r.Father</td><td>@r.StId</td><td>@r.ClassName</td><td>@r.Fee.ToString("N0")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Import @Model.Rows.Count Students</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>

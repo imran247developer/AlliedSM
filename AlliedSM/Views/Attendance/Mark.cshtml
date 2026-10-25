@@ -1,0 +1,75 @@
+@model AlliedSM.Models.AttendanceMarkViewModel
+@{
+    ViewData["Title"] = "Mark Attendance";
+}
+
+<h2>Mark Attendance</h2>
+
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="classId" class="form-select" asp-items="ViewBag.Classes">
+            <option value="">Select Class</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="sectionId" class="form-select" asp-items="ViewBag.Sections">
+            <option value="">Section Menu</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="date" name="date" class="form-control" value="@Model.AttendanceDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Load</button>
+    </div>
+    <div class="col-auto ms-auto">
+        <a asp-action="History" class="btn btn-outline-dark">Previous Dates / History</a>
+    </div>
+</form>
+
+@if (Model.Rows.Any())
+{
+    <form asp-action="Mark" method="post">
+        <input type="hidden" asp-for="SchoolClassId" />
+        <input type="hidden" asp-for="SectionId" />
+        <input type="hidden" asp-for="AttendanceDate" />
+
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr><th>Reg. No</th><th>Student Name</th><th style="width:280px;">Status</th><th>Remarks</th></tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Rows.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model.Rows[i].RegistrationNo
+                            <input type="hidden" asp-for="Rows[i].StudentId" />
+                            <input type="hidden" asp-for="Rows[i].RegistrationNo" />
+                            <input type="hidden" asp-for="Rows[i].StudentName" />
+                        </td>
+                        <td>@Model.Rows[i].StudentName</td>
+                        <td>
+                            <select asp-for="Rows[i].Status" class="form-select form-select-sm">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Leave">Leave</option>
+                                <option value="Late">Late</option>
+                            </select>
+                        </td>
+                        <td><input asp-for="Rows[i].Remarks" class="form-control form-control-sm" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Save Attendance</button>
+        <span class="text-muted small ms-2">"An SMS will be sent to the parent as soon as the student is marked absent.".</span>
+    </form>
+}
+else if (Model.SchoolClassId != 0)
+{
+    <div class="alert alert-info">"No active students found in this class/section.".</div>
+}

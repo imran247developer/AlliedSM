@@ -1,0 +1,27 @@
+@model AlliedSM.Models.Attendance
+@{
+    ViewData["Title"] = "Edit Attendance";
+}
+
+<h2>Edit Attendance — @Model.Student?.StudentName (@Model.AttendanceDate.ToString("dd-MMM-yyyy"))</h2>
+
+<form asp-action="Edit" method="post" style="max-width:400px;">
+    <input type="hidden" name="id" value="@Model.AttendanceId" />
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="Present" selected="@(Model.Status == AlliedSM.Models.AttendanceStatus.Present)">Present</option>
+            <option value="Absent" selected="@(Model.Status == AlliedSM.Models.AttendanceStatus.Absent)">Absent</option>
+            <option value="Leave" selected="@(Model.Status == AlliedSM.Models.AttendanceStatus.Leave)">Leave</option>
+            <option value="Late" selected="@(Model.Status == AlliedSM.Models.AttendanceStatus.Late)">Late</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Remarks</label>
+        <input name="remarks" class="form-control" value="@Model.Remarks" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="History" class="btn btn-outline-secondary">Cancel</a>
+</form>
